@@ -158,22 +158,26 @@ There are 256879 - 1 = 256878 unique patients. We need to subtract 1 from the ou
 The outputs of the bash commands below also show the variable column name and the count of it (once). However this does not affect the humanly readability of the unique possible values and the count for each of them.
 ```{bash}
 # admission_type
-zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $6}' | sort | uniq -c
+zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $6}' \
+| sort | uniq -c
 ```
 
 ```{bash}
 # admission_location
-zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $7}' | sort | uniq -c
+zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $7}' \
+| sort | uniq -c
 ```
 
 ```{bash}
 # insurance
-zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $9}' | sort | uniq -c
+zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $9}' \
+| sort | uniq -c
 ```
 
 ```{bash}
 # ethnicity
-zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $12}' | sort | uniq -c
+zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $12}' \
+| sort | uniq -c
 ```
 
 ## Q4. Who's popular in Price and Prejudice
