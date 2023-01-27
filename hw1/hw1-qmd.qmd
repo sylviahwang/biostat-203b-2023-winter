@@ -120,7 +120,6 @@ do
 done
 ```
 
-
 ```{bash}
 # Number of lines in each data file in the "hosp" folder
 for datafile in ~/mimic/hosp/*.gz
@@ -144,44 +143,42 @@ done
 ```{bash}
 zcat < ~/mimic/core/admissions.csv.gz | head
 ```
-Based on the output from the previous question, there are 66155 rows in `admissions.csv.gz`.
-
-```{bash}
-zcat < ~/mimic/core/admissions.csv.gz | sort -k1,1 | uniq | wc -l 
-```
-
-There are 523741 unique patients in this data file. This can't be right! (This should actually be the total rows?? Then the number from the loop is wrong?)
+Based on the output from the previous question, there are 523741 rows in `admissions.csv.gz`. (This row count includes the column name row, so the total rows of data is 523741 - 1 = 523740.)
 
 ```{bash}
 # count unique patients
-zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $1}' | sort | uniq | wc -l
+zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $1}' \
+| sort | uniq | wc -l
 ```
 
 There are 256879 - 1 = 256878 unique patients. We need to subtract 1 from the output number because the above command also counts the column title "subject_id" as one row.
 
 6. What are the possible values taken by each of the variable `admission_type`, `admission_location`, `insurance`, and `ethnicity`? Also report the count for each unique value of these variables. (Hint: combine Linux commands `zcat`, `head`/`tail`, `awk`, `uniq -c`, `wc`, and so on.)
 
+The outputs of the bash commands below also show the variable column name and the count of it (once). However this does not affect the humanly readability of the unique possible values and the count for each of them.
 ```{bash}
 # admission_type
-zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $6}' | sort | uniq -c
+zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $6}' \
+| sort | uniq -c
 ```
 
 ```{bash}
 # admission_location
-zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $7}' | sort | uniq -c
+zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $7}' \
+| sort | uniq -c
 ```
 
 ```{bash}
 # insurance
-zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $9}' | sort | uniq -c
+zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $9}' \
+| sort | uniq -c
 ```
 
 ```{bash}
 # ethnicity
-zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $12}' | sort | uniq -c
+zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $12}' \
+| sort | uniq -c
 ```
-
-(range, and unique)
 
 ## Q4. Who's popular in Price and Prejudice
 
@@ -241,8 +238,8 @@ and run
 ```
 Explain the output. Explain the meaning of `"$1"`, `"$2"`, and `"$3"` in this shell script. Why do we need the first line of the shell script?
 
-The output shows the author (Jane Austen) and the editor (Robert William Chapman) of *Pride and Prejudice*.
-
+The output shows the author name (Jane Austen) and the editor name (Robert William Chapman) of *Pride and Prejudice* (and some blank lines around). These are lines 16 ~ 20 in `pg42671.txt`.
+`"$1"`, `"$2"`, and `"$3"` are positional arguments of the script. In bash command `./middle.sh pg42671.txt 20 5`, `"$1"` = `pg42671.txt`, `"$2"` = `20`, `"$3"` = `5`. This will invoke command `head -n 20 pg42671.txt | tail -n 5`. The `head` command will display the first 20 lines of `pg42671.txt`, then this is piped into the `tail` command, which will display the last 5 lines from the first 20 lines of `pg42671.txt`, which is basically lines 16 ~ 20 in `pg42671.txt`.
 
 ## Q5. More fun with Linux
 
@@ -277,7 +274,7 @@ This command gives the kernel hostname.
 ```{bash}
 arch
 ```
-This command shows the computer architecture.
+This command shows my computer architecture, which is i386.
 
 ```{bash}
 uname -a
@@ -297,14 +294,14 @@ This command shows my user name (or say, the name of the user who's currently lo
 ```{bash}
 who
 ```
-This command shows my user name (or say, the name of the user who's currently logged in), the terminal where I am logged in, and the date and time I logged in ( Jan 14 11:12).
+This command shows the name of the currently logged in users, the terminal where the users are logged in, and the date and time they logged in.
 
 ```{bash}
 w
 ```
 This first line shows everything from the command `uptime`, including the current time, the length of time the system has been running, the number of user currently logged in, and the system load averages (average number of processes that are in runnable state) over the past 1, 5, and 15 minutes. 
 The second line shows column names for the third line.
-The third line shows my user name (or say, the name of the user who's currently logged in), the terminal where I am logged in, the date and time I logged in (14Jan23), and the idle time (i.e., the length of time the system has been running) (12days). No remote system IP or currently running process were shown.
+The third line shows the name of the currently logged in users, the terminal where the users are logged in, the date and time the users logged in, and the idle time (i.e., the length of time the system has been running) (12days). Remote system IP (if available) will show under the column name `FROM` and the currently running process (if available) will show under the column name `WHAT`.
 
 ```{bash}
 id
