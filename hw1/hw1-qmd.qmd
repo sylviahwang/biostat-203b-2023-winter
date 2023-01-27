@@ -309,19 +309,22 @@ The third line shows my user name (or say, the name of the user who's currently 
 ```{bash}
 id
 ```
-This command shows my user identity information.
+This command shows my user identity information. In this case, my user id is 501, my group id is 20. The groups list show additional groups I am in and each group id, respectively.
 
 ```{bash}
 last | head
 ```
+This command shows the first ten rows of the information on the last logins, including last logged in users, the terminal type the user logged in from, and the date and time of the login.
 
 ```{bash}
 echo {con,pre}{sent,fer}{s,ed}
 ```
+This command prints strings created from the brace expansions. With 3 braces and two strings in each of them, there are a total of 2^3^ = 8 types of possible combinations.
 
 ```{bash}
 time sleep 5
 ```
+This command asks the system to pause for 5 seconds. It shows the real time, user CPU time, and the system CPU time that was taken for the command to complete.
 
 ```{bash}
 history | tail
