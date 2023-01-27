@@ -496,7 +496,34 @@ procedureevents.csv.gz</code></pre>
 <span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grep</span> <span class="at">-o</span> <span class="at">-i</span> <span class="st">"</span><span class="va">$char</span><span class="st">"</span> pg42671.txt <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
 <span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>File ‘pg42671.txt’ already there; not retrieving.
+<pre><code>--2023-01-27 03:18:42--  http://www.gutenberg.org/cache/epub/42671/pg42671.txt
+Resolving www.gutenberg.org (www.gutenberg.org)... 2610:28:3090:3000:0:bad:cafe:47, 152.19.134.47
+Connecting to www.gutenberg.org (www.gutenberg.org)|2610:28:3090:3000:0:bad:cafe:47|:80... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://www.gutenberg.org/cache/epub/42671/pg42671.txt [following]
+--2023-01-27 03:18:43--  https://www.gutenberg.org/cache/epub/42671/pg42671.txt
+Connecting to www.gutenberg.org (www.gutenberg.org)|2610:28:3090:3000:0:bad:cafe:47|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 725060 (708K) [text/plain]
+Saving to: ‘pg42671.txt’
+
+     0K .......... .......... .......... .......... ..........  7%  654K 1s
+    50K .......... .......... .......... .......... .......... 14%  661K 1s
+   100K .......... .......... .......... .......... .......... 21% 10.5M 1s
+   150K .......... .......... .......... .......... .......... 28%  653K 1s
+   200K .......... .......... .......... .......... .......... 35% 13.8M 0s
+   250K .......... .......... .......... .......... .......... 42% 15.0M 0s
+   300K .......... .......... .......... .......... .......... 49% 14.8M 0s
+   350K .......... .......... .......... .......... .......... 56% 34.7M 0s
+   400K .......... .......... .......... .......... .......... 63%  652K 0s
+   450K .......... .......... .......... .......... .......... 70% 39.2M 0s
+   500K .......... .......... .......... .......... .......... 77% 47.9M 0s
+   550K .......... .......... .......... .......... .......... 84% 23.4M 0s
+   600K .......... .......... .......... .......... .......... 91% 51.8M 0s
+   650K .......... .......... .......... .......... .......... 98% 25.2M 0s
+   700K ........                                              100%  143M=0.3s
+
+2023-01-27 03:18:44 (2.10 MB/s) - ‘pg42671.txt’ saved [725060/725060]
 
 Elizabeth:
      634
@@ -551,7 +578,7 @@ Editor: R. W. (Robert William) Chapman
 </div>
 </div>
 <p>Explain the output. Explain the meaning of <code>"$1"</code>, <code>"$2"</code>, and <code>"$3"</code> in this shell script. Why do we need the first line of the shell script?</p>
-<p>The output shows the author name (Jane Austen) and the editor name (Robert William Chapman) of <em>Pride and Prejudice</em> (and some blank lines around). These are lines 16 ~ 20 in <code>pg42671.txt</code>. <code>"$1"</code>, <code>"$2"</code>, and <code>"$3"</code> are positional arguments of the script. In bash command <code>./middle.sh pg42671.txt 20 5</code>, <code>"$1"</code> = <code>pg42671.txt</code>, <code>"$2"</code> = <code>20</code>, <code>"$3"</code> = <code>5</code>. This will invoke command <code>head -n 20 pg42671.txt | tail -n 5</code>. The <code>head</code> command will display the first 20 lines of <code>pg42671.txt</code>, then this is piped into the tail command, which will display the last 5 lines from the first 20 lines of <code>pg42671.txt</code>, which is basically lines 16 ~ 20 in <code>pg42671.txt</code>.</p>
+<p>The output shows the author name (Jane Austen) and the editor name (Robert William Chapman) of <em>Pride and Prejudice</em> (and some blank lines around). These are lines 16 ~ 20 in <code>pg42671.txt</code>. <code>"$1"</code>, <code>"$2"</code>, and <code>"$3"</code> are positional arguments of the script. In bash command <code>./middle.sh pg42671.txt 20 5</code>, <code>"$1"</code> = <code>pg42671.txt</code>, <code>"$2"</code> = <code>20</code>, <code>"$3"</code> = <code>5</code>. This will invoke command <code>head -n 20 pg42671.txt | tail -n 5</code>. The <code>head</code> command will display the first 20 lines of <code>pg42671.txt</code>, then this is piped into the <code>tail</code> command, which will display the last 5 lines from the first 20 lines of <code>pg42671.txt</code>, which is basically lines 16 ~ 20 in <code>pg42671.txt</code>.</p>
 </section>
 <section id="q5.-more-fun-with-linux" class="level2" data-number="5">
 <h2 data-number="5" class="anchored" data-anchor-id="q5.-more-fun-with-linux"><span class="header-section-number">5</span> Q5. More fun with Linux</h2>
@@ -629,7 +656,7 @@ Su Mo Tu We Th Fr Sa
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">date</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Fri Jan 27 03:01:04 PST 2023</code></pre>
+<pre><code>Fri Jan 27 03:18:44 PST 2023</code></pre>
 </div>
 </div>
 <p>This command gives the exact current date and time.</p>
@@ -657,14 +684,14 @@ Su Mo Tu We Th Fr Sa
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">uptime</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> 3:01  up 13 days,  1:51, 1 user, load averages: 3.54 3.92 3.49</code></pre>
+<pre><code> 3:18  up 13 days,  2:09, 1 user, load averages: 3.34 2.70 2.81</code></pre>
 </div>
 </div>
 <p>This command shows the current time, the length of time the system has been running (idle time), the number of user currently logged in, and the system load averages (average number of processes that are in runnable state) over the past 1, 5, and 15 minutes.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">who</span> am i</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>hanwenwang                    Jan 27 03:01 </code></pre>
+<pre><code>hanwenwang                    Jan 27 03:18 </code></pre>
 </div>
 </div>
 <p>This command shows my user name (or say, the name of the user who’s currently logged in) and the current time.</p>
@@ -678,7 +705,7 @@ Su Mo Tu We Th Fr Sa
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb63"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">w</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> 3:01  up 13 days,  1:51, 1 user, load averages: 3.54 3.92 3.49
+<pre><code> 3:18  up 13 days,  2:09, 1 user, load averages: 3.34 2.70 2.81
 USER     TTY      FROM              LOGIN@  IDLE WHAT
 hanwenwang console  -                14Jan23 12days -</code></pre>
 </div>
@@ -718,7 +745,7 @@ root      console                   Sat Jan 14 00:57 - shutdown  (00:03)</code><
 <div class="sourceCode cell-code" id="cb71"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="bu">time</span> sleep 5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-real    0m5.006s
+real    0m5.009s
 user    0m0.001s
 sys 0m0.002s</code></pre>
 </div>

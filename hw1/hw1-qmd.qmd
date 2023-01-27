@@ -239,7 +239,7 @@ and run
 Explain the output. Explain the meaning of `"$1"`, `"$2"`, and `"$3"` in this shell script. Why do we need the first line of the shell script?
 
 The output shows the author name (Jane Austen) and the editor name (Robert William Chapman) of *Pride and Prejudice* (and some blank lines around). These are lines 16 ~ 20 in `pg42671.txt`.
-`"$1"`, `"$2"`, and `"$3"` are positional arguments of the script. In bash command `./middle.sh pg42671.txt 20 5`, `"$1"` = `pg42671.txt`, `"$2"` = `20`, `"$3"` = `5`. This will invoke command `head -n 20 pg42671.txt | tail -n 5`. The `head` command will display the first 20 lines of `pg42671.txt`, then this is piped into the tail command, which will display the last 5 lines from the first 20 lines of `pg42671.txt`, which is basically lines 16 ~ 20 in `pg42671.txt`.
+`"$1"`, `"$2"`, and `"$3"` are positional arguments of the script. In bash command `./middle.sh pg42671.txt 20 5`, `"$1"` = `pg42671.txt`, `"$2"` = `20`, `"$3"` = `5`. This will invoke command `head -n 20 pg42671.txt | tail -n 5`. The `head` command will display the first 20 lines of `pg42671.txt`, then this is piped into the `tail` command, which will display the last 5 lines from the first 20 lines of `pg42671.txt`, which is basically lines 16 ~ 20 in `pg42671.txt`.
 
 ## Q5. More fun with Linux
 
