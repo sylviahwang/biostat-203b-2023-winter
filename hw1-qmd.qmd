@@ -1,0 +1,329 @@
+---
+title: "Biostat 203B Homework 1"
+subtitle: Due Jan 27 @ 11:59PM
+author: Sylvia Wang, UID:105118268
+format:
+  html:
+    theme: cosmo
+    number-sections: true
+    toc: true
+    toc-depth: 4
+    toc-location: left
+    code-fold: false
+knitr:
+  opts_chunk: 
+    cache: false    
+    echo: true
+    fig.align: 'center'
+    fig.width: 6
+    fig.height: 4
+    message: FALSE
+---
+
+Display machine information for reproducibility:
+```{r}
+sessionInfo()
+```
+
+## Q1. Git/GitHub
+
+**No handwritten homework reports are accepted for this course.** We work with Git and GitHub. Efficient and abundant use of Git, e.g., frequent and well-documented commits, is an important criterion for grading your homework.
+
+1. Apply for the [Student Developer Pack](https://education.github.com/pack) at GitHub using your UCLA email. You'll get GitHub Pro account for free (unlimited public and private repositories).
+
+2. Create a **private** repository `biostat-203b-2023-winter` and add `Hua-Zhou` and `tomokiokuno0528` as your collaborators with write permission.
+
+3. Top directories of the repository should be `hw1`, `hw2`, ... Maintain two branches `master` and `develop`. The `develop` branch will be your main playground, the place where you develop solution (code) to homework problems and write up report. The `master` branch will be your presentation area. Submit your homework files (Quarto file `qmd`, `html` file converted by Quarto, all code and extra data sets to reproduce results) in `main` branch.
+
+4. After each homework due date, course reader and instructor will check out your `master` branch for grading. Tag each of your homework submissions with tag names `hw1`, `hw2`, ... Tagging time will be used as your submission time. That means if you tag your `hw1` submission after deadline, penalty points will be deducted for late submission.
+
+5. After this course, you can make this repository public and use it to demonstrate your skill sets on job market.
+
+## Q2. Data ethics training
+
+This exercise (and later in this course) uses the [MIMIC-IV data](https://mimic-iv.mit.edu), a freely accessible critical care database developed by the MIT Lab for Computational Physiology. Follow the instructions at <https://mimic.mit.edu/docs/gettingstarted/> to (1) complete the CITI `Data or Specimens Only Research` course and (2) obtain the PhysioNet credential for using the MIMIC-IV data. Display the verification links to your completion report and completion certificate here. (Hint: The CITI training takes a couple hours and the PhysioNet credentialing takes a couple days; do not leave it to the last minute.)
+
+Course completion report: 
+<https://www.citiprogram.org/verify/?k76f25322-80c0-4984-9fbf-98967f1db504-53704177>
+
+Course completion certificate: <https://www.citiprogram.org/verify/?wc46063c8-cc1e-4afb-aea1-b87fb79a6500-53704177>
+
+## Q3. Linux Shell Commands
+
+1. The `~/mimic` folder within the Docker container contains data sets from MIMIC-IV. Refer to the documentation <https://mimic.mit.edu/docs/iv/> for details of data files.  
+```{bash}
+#| eval: false
+ls -l ~/mimic
+```
+Please, do **not** put these data files into Git; they are big. Do **not** copy them into your directory. Do **not** decompress the gz data files. These create unnecessary big files on storage and are not big data friendly practices. Just read from the data folder `~/mimic` directly in following exercises. 
+
+  Use Bash commands to answer following questions.
+
+2. Display the contents in the folders `core`, `hosp`, `icu`. Why are these data files distributed as `.csv.gz` files instead of `.csv` (comma separated values) files? Read the page <https://mimic.mit.edu/docs/iv/> to understand what's in each folder.
+
+```{bash}
+# make MIMIC data available at ~/mimic
+ln -s /Volumes/SanDisk36/BIOSTATS203B/mimic-iv-1.0 ~/mimic
+ls ~/mimic
+```
+
+```{bash}
+# display contents in folder "core"
+ls ~/mimic/core
+```
+
+The `core` folder stores tracking information of the patients. It records each hospitalization and each ward stay within a hospitalization. (This folder/module has been removed and the contents are merged into `hosp` in MIMIC-IV v2.2.)
+
+```{bash}
+# display contents in folder "hosp"
+ls ~/mimic/hosp
+```
+
+The `hosp` folder records hospital level data of patients including lab events, microbiology events, and electronic medication administration.
+
+```{bash}
+# display contents in folder "icu"
+ls ~/mimic/icu
+```
+
+The `icu` folder contains ICU level data as event tables, including ICU stays, item id, chart events, input events, output events, procedure events, date time events.
+
+`.csv.gz` files are compressed `.csv` files. These data files are distributed in the compressed form (`.csv.gz` rather than `.csv`) to save storage and to be sent, received, and processed much quicker.
+
+Reference: Johnson, A., Bulgarelli, L., Pollard, T., Horng, S., Celi, L. A., & Mark, R. (2023). MIMIC-IV (version 2.2). PhysioNet. <https://doi.org/10.13026/6mm1-ek67>.
+
+3. Briefly describe what bash commands `zcat`, `zless`, `zmore`, and `zgrep` do.
+
+`zcat` allows the user to display contents of a compressed file without having to manually decompress the file (which saves a lot of time).
+Both `zless` and `zmore` are used to paginate the contents of the compressed file. `zless` allows the used to scroll upwards and downwards in the output. It loads files faster than `zmore` and has more viewing flexibility. `zmore` allows the user to view compressed files one screenful at a time.
+`zgrep` can print lines that match an expression in a compressed file.
+`zcat`, `zless`, `zmore`, and `zgrep` are just like the `cat`, `less`, `more`, and `grep` commands for uncompressed files. Same options for each pair of commands (eg. `zgrep` and `grep`) should apply.
+
+4. What's the output of the following bash script?
+```{bash}
+for datafile in ~/mimic/core/*.gz
+do
+  ls -l $datafile
+done
+```
+
+The bash script above lists the detailed contents in the `core` folder (without unziping the compressed files). It shows information including file permissions, the number of links/directories inside this directory, the user, the group the file belongs to, the file size in bytes, the date of last modification, and the name of the file.
+
+Display the number of lines in each data file using a similar loop.
+
+```{bash}
+# Number of lines in each data file in the "core" folder
+for datafile in ~/mimic/core/*.gz
+do
+  echo $datafile:
+  zcat < $datafile | wc -l
+done
+```
+
+
+```{bash}
+# Number of lines in each data file in the "hosp" folder
+for datafile in ~/mimic/hosp/*.gz
+do
+  echo $datafile:
+  zcat < $datafile | wc -l
+done
+```
+
+```{bash}
+# Number of lines in each data file in the "icu" folder
+for datafile in ~/mimic/icu/*.gz
+do
+  echo $datafile:
+  zcat < $datafile | wc -l
+done
+```
+
+5. Display the first few lines of `admissions.csv.gz`. How many rows are in this data file? How many unique patients (identified by `subject_id`) are in this data file? (Hint: combine Linux commands `zcat`, `head`/`tail`, `awk`, `sort`, `uniq`, `wc`, and so on.)
+
+```{bash}
+zcat < ~/mimic/core/admissions.csv.gz | head
+```
+Based on the output from the previous question, there are 66155 rows in `admissions.csv.gz`.
+
+```{bash}
+zcat < ~/mimic/core/admissions.csv.gz | sort -k1,1 | uniq | wc -l 
+```
+
+There are 523741 unique patients in this data file. This can't be right! (This should actually be the total rows?? Then the number from the loop is wrong?)
+
+```{bash}
+# count unique patients
+zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $1}' | sort | uniq | wc -l
+```
+
+There are 256879 - 1 = 256878 unique patients. We need to subtract 1 from the output number because the above command also counts the column title "subject_id" as one row.
+
+6. What are the possible values taken by each of the variable `admission_type`, `admission_location`, `insurance`, and `ethnicity`? Also report the count for each unique value of these variables. (Hint: combine Linux commands `zcat`, `head`/`tail`, `awk`, `uniq -c`, `wc`, and so on.)
+
+```{bash}
+# admission_type
+zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $6}' | sort | uniq -c
+```
+
+```{bash}
+# admission_location
+zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $7}' | sort | uniq -c
+```
+
+```{bash}
+# insurance
+zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $9}' | sort | uniq -c
+```
+
+```{bash}
+# ethnicity
+zcat < ~/mimic/core/admissions.csv.gz | awk -F, '{print $12}' | sort | uniq -c
+```
+
+(range, and unique)
+
+## Q4. Who's popular in Price and Prejudice
+
+1. You and your friend just have finished reading *Pride and Prejudice* by Jane Austen. Among the four main characters in the book, Elizabeth, Jane, Lydia, and Darcy, your friend thinks that Darcy was the most mentioned. You, however, are certain it was Elizabeth. Obtain the full text of the novel from <http://www.gutenberg.org/cache/epub/42671/pg42671.txt> and save to your local folder. 
+```{bash}
+#| eval: false
+wget -nc http://www.gutenberg.org/cache/epub/42671/pg42671.txt
+```
+Explain what `wget -nc` does. Do **not** put this text file `pg42671.txt` in Git. Complete the following loop to tabulate the number of times each of the four characters is mentioned using Linux commands.
+
+`wget` is a command to download files from web. `-nc` is an option that prevents `wget` from downloading multiple versions of the same file. This means `wget -nc` allows the user to only download the file once- the command will refuse to retrieve any additional copies of the same file. 
+
+```{bash}
+wget -nc http://www.gutenberg.org/cache/epub/42671/pg42671.txt
+for char in Elizabeth Jane Lydia Darcy
+do
+  echo $char:
+  grep -o -i "$char" pg42671.txt | wc -l
+done
+```
+
+2. What's the difference between the following two commands?
+```{bash}
+#| eval: false
+echo 'hello, world' > test1.txt
+```
+and
+```{bash}
+#| eval: false
+echo 'hello, world' >> test2.txt
+```
+
+`>` stores output from one command to a file, while `>>` append output from one command to a file. This means if I run `echo 'hello, world' > test1.txt` x times, I will still only see **one** `hello, world` in test1.txt. However, if I run `echo 'hello, world' >> test2.txt` x times, I will see **x times** of `hello, world` in test2.txt.
+
+3. Using your favorite text editor (e.g., `vi`), type the following and save the file as `middle.sh`:
+```{bash eval=FALSE}
+#!/bin/sh
+# Select lines from the middle of a file.
+# Usage: bash middle.sh filename end_line num_lines
+head -n "$2" "$1" | tail -n "$3"
+```
+
+Using `chmod` to make the file executable by the owner, 
+
+```{bash}
+chmod u+x middle.sh
+```
+
+```{bash}
+# check file permissions
+ls -l middle.sh
+```
+
+and run
+```{bash}
+./middle.sh pg42671.txt 20 5
+```
+Explain the output. Explain the meaning of `"$1"`, `"$2"`, and `"$3"` in this shell script. Why do we need the first line of the shell script?
+
+The output shows the author (Jane Austen) and the editor (Robert William Chapman) of *Pride and Prejudice*.
+
+
+## Q5. More fun with Linux
+
+Try following commands in Bash and interpret the results: `cal`, `cal 2021`, `cal 9 1752` (anything unusual?), `date`, `hostname`, `arch`, `uname -a`, `uptime`, `who am i`, `who`, `w`, `id`, `last | head`, `echo {con,pre}{sent,fer}{s,ed}`, `time sleep 5`, `history | tail`.
+
+```{bash}
+cal
+```
+This command highlights the current date in the current monthly calendar of the year.
+
+```{bash}
+cal 2021
+```
+This command gives the full year calendar of 2021.
+
+```{bash}
+cal 9 1752
+```
+This command gives the September calendar in 1752. September 2nd is followed by September 14th. The 3rd to the 13th are lost.
+According to information on [Gregorian Calendar](https://en.wikipedia.org/wiki/Gregorian_calendar), the British Empire replaced the Julian calender with the Gregorian calendar in September, 1752. Julian calendar was 11 days behind the Gregorian calendar and these days were lost. However, countries around the world adapted the Gregorian calendar at different times, so the time chosen to display this correction seems somewhat arbitrary.
+
+```{bash}
+date
+```
+This command gives the exact current date and time.
+
+```{bash}
+hostname
+```
+This command gives the kernel hostname.
+
+```{bash}
+arch
+```
+This command shows the computer architecture.
+
+```{bash}
+uname -a
+```
+This command displays all system information, including kernel name (Darwin), host node name (hanwens-mbp.ad.medctr.ucla.edu), kernel release (22.2.0), and kernel version (Darwin Kernel Version 22.2.0: Fri Nov 11 02:08:47 PST 2022 root:xnu-8792.61.2~4/RELEASE_X86_64 x86_64).
+
+```{bash}
+uptime
+```
+This command shows the current time, the length of time the system has been running (idle time), the number of user currently logged in, and the system load averages (average number of processes that are in runnable state) over the past 1, 5, and 15 minutes.
+
+```{bash}
+who am i
+```
+This command shows my user name (or say, the name of the user who's currently logged in) and the current time.
+
+```{bash}
+who
+```
+This command shows my user name (or say, the name of the user who's currently logged in), the terminal where I am logged in, and the date and time I logged in ( Jan 14 11:12).
+
+```{bash}
+w
+```
+This first line shows everything from the command `uptime`, including the current time, the length of time the system has been running, the number of user currently logged in, and the system load averages (average number of processes that are in runnable state) over the past 1, 5, and 15 minutes. 
+The second line shows column names for the third line.
+The third line shows my user name (or say, the name of the user who's currently logged in), the terminal where I am logged in, the date and time I logged in (14Jan23), and the idle time (i.e., the length of time the system has been running) (12days). No remote system IP or currently running process were shown.
+
+```{bash}
+id
+```
+This command shows my user identity information.
+
+```{bash}
+last | head
+```
+
+```{bash}
+echo {con,pre}{sent,fer}{s,ed}
+```
+
+```{bash}
+time sleep 5
+```
+
+```{bash}
+history | tail
+```
+This command shows the last 10 bash commands that were run in the terminal.
