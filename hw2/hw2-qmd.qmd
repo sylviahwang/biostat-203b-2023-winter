@@ -1,7 +1,7 @@
 ---
 title: "Biostat 203B Homework 2"
 subtitle: Due Feb 10 @ 11:59PM
-author: YOUR NAME and UID
+author: Sylvia Wang, 105118268
 format:
   html:
     theme: cosmo
@@ -22,7 +22,6 @@ knitr:
 
 Display machine information for reproducibility:
 ```{r}
-#| eval: false
 sessionInfo()
 ```
 
@@ -57,6 +56,22 @@ Which function is fastest? Is there difference in the (default) parsed data type
 
 For later questions, we stick to the `read_csv` in tidyverse.
 
+```{r}
+system.time(ad1 <- read.csv("~/mimic/core/admissions.csv.gz"))
+```
+
+
+```{r}
+system.time(ad2 <- read_csv("~/mimic/core/admissions.csv.gz"))
+```
+
+```{r}
+system.time(ad3 <- fread("~/mimic/core/admissions.csv.gz"))
+```
+
+`fread` is the fastest function.
+"Is there difference in the (default) parsed data types?"
+
 ## Q2. ICU stays
 
 `icustays.csv.gz` (<https://mimic.mit.edu/docs/iv/modules/icu/icustays/>) contains data about Intensive Care Units (ICU) stays. The first 10 lines are
@@ -71,10 +86,29 @@ system(
 )
 ```
 
-1. Import `icustatys.csv.gz` as a tibble `icustays_tble`. 
+1. Import `icustays.csv.gz` as a tibble `icustays_tble`. 
+```{r}
+icustays_tble <- read_csv("~/mimic/icu/icustays.csv.gz")
+```
 
 2. How many unique `subject_id`? Can a `subject_id` have multiple ICU stays? 
+```{r}
+length(unique(icustays_tble$subject_id))
+```
+There are 53150 unique `subject_id`.
+
+```{r}
+head(table(icustays_tble$subject_id),10)
+```
+Yes, a `subject_id` can have multiple ICU stays. As demonstrated by the first 10 ids here, some of them have more than 1 ICU stays.
+
 3. Summarize the number of ICU stays per `subject_id` by graphs. 
+```{r}
+ggplot(data = icustays_tble) + 
+  geom_bar(mapping = aes(x = subject_id))
+```
+
+Do you mean show how many id's in each number of stay?
 
 4. For each `subject_id`, let's only keep the first ICU stay in the tibble `icustays_tble`. (Hint: `slice_min` and `slice_max` may take long. Think alternative ways to achieve the same function.)
 
