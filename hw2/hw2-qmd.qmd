@@ -116,7 +116,7 @@ ggplot(data = stays) +
 ```
 Since the majority of subjects only had one ICU stay, it is hard to see those with more stay on the graph.
 
-    I thus also tried showing the actual numbers of subjects having certain number of ICU stays on top of each bar in the histogram, but the result is not very pretty either (but at least we can see those having a large number of stays):
+I thus also tried showing the actual numbers of subjects having certain number of ICU stays on top of each bar in the histogram, but the result is not very pretty either (but at least we can see those having a large number of stays):
 ```{r}
 count <- stays %>% 
   group_by(stay_count) %>%
