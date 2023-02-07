@@ -161,7 +161,7 @@ zcat < ~/mimic/core/admissions.csv.gz | tail -n +2 | awk -F, '{print $1}' \
 | sort | uniq | wc -l
 ```
 
-Now the result is directly showing 256878.
+Now the result is directly showing 256878. 
 
 6. What are the possible values taken by each of the variable `admission_type`, `admission_location`, `insurance`, and `ethnicity`? Also report the count for each unique value of these variables. (Hint: combine Linux commands `zcat`, `head`/`tail`, `awk`, `uniq -c`, `wc`, and so on.)
 
