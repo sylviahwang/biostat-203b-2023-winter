@@ -70,7 +70,7 @@ system.time(ad3 <- fread("~/mimic/core/admissions.csv.gz"))
 ```
 
 `fread` is the fastest function.
-"Is there difference in the (default) parsed data types?"
+"Is there difference in the (default) parsed data types?" This question means if the data type of each column is different when the dataset is imported through different methods.
 
 ## Q2. ICU stays
 
@@ -103,12 +103,31 @@ head(table(icustays_tble$subject_id),10)
 Yes, a `subject_id` can have multiple ICU stays. As demonstrated by the first 10 ids here, some of them have more than 1 ICU stays.
 
 3. Summarize the number of ICU stays per `subject_id` by graphs. 
-```{r}
-ggplot(data = icustays_tble) + 
-  geom_bar(mapping = aes(x = subject_id))
-```
 
-Do you mean show how many id's in each number of stay?
+```{r}
+stays <- icustays_tble %>%
+  group_by(subject_id) %>%
+  summarize(stay_count = n()) 
+
+ggplot(data = stays) + 
+  geom_bar(mapping = aes(x = stay_count)) +
+  xlab("Number of ICU stays") +
+  ylab("Number of subjects \n staying the certain number of ICU stays") 
+```
+Since the majority of subjects only had one ICU stay, it is hard to see those with more stay on the graph.
+
+    I thus also tried showing the actual numbers of subjects having certain number of ICU stays on top of each bar in the histogram, but the result is not very pretty either (but at least we can see those having a large number of stays):
+```{r}
+count <- stays %>% 
+  group_by(stay_count) %>%
+  summarize(subject_count = n())
+
+ggplot(count, aes(x = stay_count, y = subject_count)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = subject_count, vjust = -0.25)) +
+  xlab("Number of ICU stays") +
+  ylab("Number of subjects \n staying the certain number of ICU stays")
+```
 
 4. For each `subject_id`, let's only keep the first ICU stay in the tibble `icustays_tble`. (Hint: `slice_min` and `slice_max` may take long. Think alternative ways to achieve the same function.)
 
@@ -127,6 +146,9 @@ system(
 ```
 
 1. Import `admissions.csv.gz` as a tibble `admissions_tble`.
+```{r}
+admissions_tble <- read_csv("~/mimic/core/admissions.csv.gz")
+```
 
 2. Let's only keep the admissions that have a match in `icustays_tble` according to `subject_id` and `hadmi_id`.
 
@@ -218,7 +240,7 @@ system(
 
 1. We are interested in the vitals for ICU patients: heart rate (220045), mean non-invasive blood pressure (220181), systolic non-invasive blood pressure (220179), body temperature in Fahrenheit (223761), and respiratory rate (220210). Retrieve a subset of `chartevents.csv.gz` only containing these items for the patients in `icustays_tble` as a tibble `chartevents_tble`.
 
-    Hint: `chartevents.csv.gz` is a data file too big to be read in by the `read_csv` function in its default setting. Utilize the `col_select` option in the `read_csv` function to reduce the memory burden. It took my computer >15 minutes to ingest this file. If your computer really has trouble importing `labevents.csv.gz`, you can import from the reduced data file `chartevents_filtered_itemid.csv.gz`.
+    Hint: `chartevents.csv.gz` is a data file too big to be read in by the `read_csv` function in its default setting. Utilize the `col_select` option in the `read_csv` function to reduce the memory burden. It took my computer >15 minutes to ingest this file. If your computer really has trouble importing `chartevents.csv.gz`, you can import from the reduced data file `chartevents_filtered_itemid.csv.gz`.
 
 2. Further restrict `chartevents_tble` to the first vital measurement during the ICU stay. 
 
