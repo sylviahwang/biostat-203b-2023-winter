@@ -245,7 +245,15 @@ ggplot(data = admissions_tble) +
   geom_bar(mapping = aes(x = difftime(dischtime, admittime, units = "weeks"))) +
   xlab("Length of hospital stay (weeks)") 
 ```
-    
+
+```{r}
+ggplot(data = admissions_tble) + 
+  geom_bar(mapping = aes(x = difftime(dischtime, admittime, units = "week"))) +
+  scale_x_continuous(limits = c(0, max(difftime(
+    admissions_tble$dischtime, admissions_tble$admittime, units = "week"))))
+```
+
+
 What might be unusual is that the bars are tiny and we can only see the bars on the bottom left- I tried with using the unit as days and weeks and both look similar. I'm assuming there are patients who stayed for a fairly long period (different in length among themselves as well), thus it is hard to observe these people directly on the histogram.
     
 ## Q4. `patients` data
@@ -264,7 +272,49 @@ system(
 
 1. Import `patients.csv.gz` (<https://mimic.mit.edu/docs/iv/modules/core/patients/>) as a tibble `patients_tble` and only keep the patients who have a match in `icustays_tble` (according to `subject_id`).
 
+```{r}
+patients_tble <- read_csv("~/mimic/core/patients.csv.gz") %>% 
+  semi_join(icustays_tble, by = "subject_id")
+patients_tble
+```
+
 2. Summarize variables `gender` and `anchor_age`, and explain any patterns you see.
+
+```{r}
+table(patients_tble$gender)
+```
+
+```{r}
+summary(patients_tble$anchor_age)
+```
+
+```{r}
+patients_tble %>% 
+  filter(gender=="M") %>% 
+  summarize(
+    min(anchor_age),
+    median(anchor_age),
+    mean(anchor_age),
+    max(anchor_age))
+
+patients_tble %>% 
+  filter(gender=="F") %>% 
+  summarize(
+    min(anchor_age),
+    median(anchor_age),
+    mean(anchor_age),
+    max(anchor_age))
+```
+
+```{r}
+ggplot(patients_tble) +
+  geom_bar(mapping = aes(x = anchor_age))
+```
+
+
+There are slightly more males than females. The mean anchor age for all patients is around 63.5 with a median of 65.
+Male patients are generally younger than female patients. The mean anchor age for male is 62.5 with a median of 64, whereas the mean anchor age for female is 64.8 with a median of 67.
+From the histogram we can see the distribution of anchor age is left skewed. There are more patients with older anchor age than younger anchor age. We observed a peak at age 91- we should go back to the codebook and see if 91 is actually an anchor age, or if it is a code for missing value.
 
 ## Q5. Lab results
 
