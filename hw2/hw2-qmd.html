@@ -255,37 +255,125 @@ loaded via a namespace (and not attached):
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(ad1 <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"~/mimic/core/admissions.csv.gz"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
- 10.627   0.255  10.927 </code></pre>
+  8.796   0.213   9.084 </code></pre>
 </div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(ad2 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"~/mimic/core/admissions.csv.gz"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  3.835   0.988   1.836 </code></pre>
+  2.511   0.630   1.219 </code></pre>
 </div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(ad3 <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="st">"~/mimic/core/admissions.csv.gz"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  1.077   0.387   1.511 </code></pre>
+  0.773   0.256   1.075 </code></pre>
 </div>
 </div>
-<p><code>fread</code> is the fastest function. “Is there difference in the (default) parsed data types?” This question means if the data type of each column is different when the dataset is imported through different methods.</p>
+<p><code>fread</code> is the fastest function.</p>
+<p>(default) parsed data types:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(ad1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   523740 obs. of  15 variables:
+ $ subject_id          : int  14679932 15585972 11989120 17817079 15078341 19124609 17301855 17991012 16865435 13693648 ...
+ $ hadm_id             : int  21038362 24941086 21965160 24709883 23272159 20517215 29732723 24298836 23216961 21640725 ...
+ $ admittime           : chr  "2139-09-26 14:16:00" "2123-10-07 23:56:00" "2147-01-14 09:00:00" "2165-12-27 17:33:00" ...
+ $ dischtime           : chr  "2139-09-28 11:30:00" "2123-10-12 11:22:00" "2147-01-17 14:25:00" "2165-12-31 21:18:00" ...
+ $ deathtime           : chr  "" "" "" "" ...
+ $ admission_type      : chr  "ELECTIVE" "ELECTIVE" "ELECTIVE" "ELECTIVE" ...
+ $ admission_location  : chr  "" "" "" "" ...
+ $ discharge_location  : chr  "HOME" "HOME" "HOME" "HOME" ...
+ $ insurance           : chr  "Other" "Other" "Other" "Other" ...
+ $ language            : chr  "ENGLISH" "ENGLISH" "ENGLISH" "ENGLISH" ...
+ $ marital_status      : chr  "SINGLE" "" "" "" ...
+ $ ethnicity           : chr  "UNKNOWN" "WHITE" "UNKNOWN" "OTHER" ...
+ $ edregtime           : chr  "" "" "" "" ...
+ $ edouttime           : chr  "" "" "" "" ...
+ $ hospital_expire_flag: int  0 0 0 0 0 0 0 0 0 0 ...</code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(ad2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>spc_tbl_ [523,740 × 15] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+ $ subject_id          : num [1:523740] 14679932 15585972 11989120 17817079 15078341 ...
+ $ hadm_id             : num [1:523740] 21038362 24941086 21965160 24709883 23272159 ...
+ $ admittime           : POSIXct[1:523740], format: "2139-09-26 14:16:00" "2123-10-07 23:56:00" ...
+ $ dischtime           : POSIXct[1:523740], format: "2139-09-28 11:30:00" "2123-10-12 11:22:00" ...
+ $ deathtime           : POSIXct[1:523740], format: NA NA ...
+ $ admission_type      : chr [1:523740] "ELECTIVE" "ELECTIVE" "ELECTIVE" "ELECTIVE" ...
+ $ admission_location  : chr [1:523740] NA NA NA NA ...
+ $ discharge_location  : chr [1:523740] "HOME" "HOME" "HOME" "HOME" ...
+ $ insurance           : chr [1:523740] "Other" "Other" "Other" "Other" ...
+ $ language            : chr [1:523740] "ENGLISH" "ENGLISH" "ENGLISH" "ENGLISH" ...
+ $ marital_status      : chr [1:523740] "SINGLE" NA NA NA ...
+ $ ethnicity           : chr [1:523740] "UNKNOWN" "WHITE" "UNKNOWN" "OTHER" ...
+ $ edregtime           : POSIXct[1:523740], format: NA NA ...
+ $ edouttime           : POSIXct[1:523740], format: NA NA ...
+ $ hospital_expire_flag: num [1:523740] 0 0 0 0 0 0 0 0 0 0 ...
+ - attr(*, "spec")=
+  .. cols(
+  ..   subject_id = col_double(),
+  ..   hadm_id = col_double(),
+  ..   admittime = col_datetime(format = ""),
+  ..   dischtime = col_datetime(format = ""),
+  ..   deathtime = col_datetime(format = ""),
+  ..   admission_type = col_character(),
+  ..   admission_location = col_character(),
+  ..   discharge_location = col_character(),
+  ..   insurance = col_character(),
+  ..   language = col_character(),
+  ..   marital_status = col_character(),
+  ..   ethnicity = col_character(),
+  ..   edregtime = col_datetime(format = ""),
+  ..   edouttime = col_datetime(format = ""),
+  ..   hospital_expire_flag = col_double()
+  .. )
+ - attr(*, "problems")=&lt;externalptr&gt; </code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(ad3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Classes 'data.table' and 'data.frame':  523740 obs. of  15 variables:
+ $ subject_id          : int  14679932 15585972 11989120 17817079 15078341 19124609 17301855 17991012 16865435 13693648 ...
+ $ hadm_id             : int  21038362 24941086 21965160 24709883 23272159 20517215 29732723 24298836 23216961 21640725 ...
+ $ admittime           : POSIXct, format: "2139-09-26 14:16:00" "2123-10-07 23:56:00" ...
+ $ dischtime           : POSIXct, format: "2139-09-28 11:30:00" "2123-10-12 11:22:00" ...
+ $ deathtime           : POSIXct, format: NA NA ...
+ $ admission_type      : chr  "ELECTIVE" "ELECTIVE" "ELECTIVE" "ELECTIVE" ...
+ $ admission_location  : chr  "" "" "" "" ...
+ $ discharge_location  : chr  "HOME" "HOME" "HOME" "HOME" ...
+ $ insurance           : chr  "Other" "Other" "Other" "Other" ...
+ $ language            : chr  "ENGLISH" "ENGLISH" "ENGLISH" "ENGLISH" ...
+ $ marital_status      : chr  "SINGLE" "" "" "" ...
+ $ ethnicity           : chr  "UNKNOWN" "WHITE" "UNKNOWN" "OTHER" ...
+ $ edregtime           : POSIXct, format: NA NA ...
+ $ edouttime           : POSIXct, format: NA NA ...
+ $ hospital_expire_flag: int  0 0 0 0 0 0 0 0 0 0 ...
+ - attr(*, ".internal.selfref")=&lt;externalptr&gt; </code></pre>
+</div>
+</div>
+<p>When using <code>read.csv</code>, the file is read in as a data frame. The data formats of the columns within the data frame are integer (int) (subject_id, hadm_id, hospital_expire_flag) and character (chr) (admittime, dischtime, deathtime, admission_type, admission_location, discharge_location, insurance, language, marital_status, ethnicity, edregtime, edouttime).</p>
+<p>When using <code>read_csv</code>, the file’s read-in format can be regarded as spec_tbl_df, tbl_df, tbl (tibble), or data frame. The data format of the columns within the tibble are called numeric (num), character (chr), and POSIXct. POSIXct is the data format for date and time (admittime, dischtime, deathtime, edregtime, edouttime). It stores date and time in seconds with the number of seconds beginning at 1 January 1970.</p>
+<p>When using <code>fread</code>, the file’s read-in format can be regarded as data table or data frame. The data formats of the columns are integer (int), character (chr), and POSIXct.</p>
+<p>The numeric and integer formats are interchangeable for the columns with pure number values. Date and time values are either regarded as character when using <code>read.csv</code>, or recorded in the POSIXct format specific for date and time when the file is being imported using <code>read_csv</code> or <code>fread</code>. Columns with normal texts are always in the character format regardless of importing method.</p>
 </section>
 <section id="q2.-icu-stays" class="level2" data-number="2">
 <h2 data-number="2" class="anchored" data-anchor-id="q2.-icu-stays"><span class="header-section-number">2</span> Q2. ICU stays</h2>
 <p><code>icustays.csv.gz</code> (<a href="https://mimic.mit.edu/docs/iv/modules/icu/icustays/" class="uri">https://mimic.mit.edu/docs/iv/modules/icu/icustays/</a>) contains data about Intensive Care Units (ICU) stays. The first 10 lines are</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_c</span>(</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcat &lt; "</span>, </span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(mimic_path, <span class="st">"/icu/icustays.csv.gz"</span>), </span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">" | head"</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    ), </span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">intern =</span> <span class="cn">TRUE</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_c</span>(</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcat &lt; "</span>, </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(mimic_path, <span class="st">"/icu/icustays.csv.gz"</span>), </span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">" | head"</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    ), </span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">intern =</span> <span class="cn">TRUE</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "subject_id,hadm_id,stay_id,first_careunit,last_careunit,intime,outtime,los"                                                    
  [2] "17867402,24528534,31793211,Trauma SICU (TSICU),Trauma SICU (TSICU),2154-03-03 04:11:00,2154-03-04 18:16:56,1.5874537037037035" 
@@ -303,20 +391,20 @@ loaded via a namespace (and not attached):
 <li>Import <code>icustays.csv.gz</code> as a tibble <code>icustays_tble</code>.</li>
 </ol>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>icustays_tble <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"~/mimic/icu/icustays.csv.gz"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>icustays_tble <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"~/mimic/icu/icustays.csv.gz"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="2" type="1">
 <li>How many unique <code>subject_id</code>? Can a <code>subject_id</code> have multiple ICU stays?</li>
 </ol>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(icustays_tble<span class="sc">$</span>subject_id))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(icustays_tble<span class="sc">$</span>subject_id))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 53150</code></pre>
 </div>
 </div>
 <p>There are 53150 unique <code>subject_id</code>.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">table</span>(icustays_tble<span class="sc">$</span>subject_id),<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">table</span>(icustays_tble<span class="sc">$</span>subject_id),<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 10000032 10000980 10001217 10001725 10001884 10002013 10002155 10002223 
@@ -330,18 +418,18 @@ loaded via a namespace (and not attached):
 <li>Summarize the number of ICU stays per <code>subject_id</code> by graphs.</li>
 </ol>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>stays <span class="ot">&lt;-</span> icustays_tble <span class="sc">%&gt;%</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(subject_id) <span class="sc">%&gt;%</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">stay_count =</span> <span class="fu">n</span>()) </span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> stays) <span class="sc">+</span> </span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> stay_count)) <span class="sc">+</span></span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Number of ICU stays"</span>) <span class="sc">+</span></span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Number of subjects </span><span class="sc">\n</span><span class="st"> staying the certain number of ICU stays"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>stays <span class="ot">&lt;-</span> icustays_tble <span class="sc">%&gt;%</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(subject_id) <span class="sc">%&gt;%</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">stay_count =</span> <span class="fu">n</span>()) </span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> stays) <span class="sc">+</span> </span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> stay_count)) <span class="sc">+</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Number of ICU stays"</span>) <span class="sc">+</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Number of subjects </span><span class="sc">\n</span><span class="st"> staying the certain number of ICU stays"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="hw2-qmd_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="576"></p>
+<p><img src="hw2-qmd_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="576"></p>
 </figure>
 </div>
 </div>
@@ -349,19 +437,19 @@ loaded via a namespace (and not attached):
 <p>Since the majority of subjects only had one ICU stay, it is hard to see those with more stay on the graph.</p>
 <p>I thus also tried showing the actual numbers of subjects having certain number of ICU stays on top of each bar in the histogram, but the result is not very pretty either (but at least we can see those having a large number of stays):</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>count <span class="ot">&lt;-</span> stays <span class="sc">%&gt;%</span> </span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(stay_count) <span class="sc">%&gt;%</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">subject_count =</span> <span class="fu">n</span>())</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(count, <span class="fu">aes</span>(<span class="at">x =</span> stay_count, <span class="at">y =</span> subject_count)) <span class="sc">+</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> subject_count, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.25</span>)) <span class="sc">+</span></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Number of ICU stays"</span>) <span class="sc">+</span></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Number of subjects </span><span class="sc">\n</span><span class="st"> staying the certain number of ICU stays"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>count <span class="ot">&lt;-</span> stays <span class="sc">%&gt;%</span> </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(stay_count) <span class="sc">%&gt;%</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">subject_count =</span> <span class="fu">n</span>())</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(count, <span class="fu">aes</span>(<span class="at">x =</span> stay_count, <span class="at">y =</span> subject_count)) <span class="sc">+</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> subject_count, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.25</span>)) <span class="sc">+</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Number of ICU stays"</span>) <span class="sc">+</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Number of subjects </span><span class="sc">\n</span><span class="st"> staying the certain number of ICU stays"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="hw2-qmd_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="576"></p>
+<p><img src="hw2-qmd_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="576"></p>
 </figure>
 </div>
 </div>
@@ -369,19 +457,44 @@ loaded via a namespace (and not attached):
 <ol start="4" type="1">
 <li>For each <code>subject_id</code>, let’s only keep the first ICU stay in the tibble <code>icustays_tble</code>. (Hint: <code>slice_min</code> and <code>slice_max</code> may take long. Think alternative ways to achieve the same function.)</li>
 </ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>icustays_tble <span class="ot">&lt;-</span> icustays_tble <span class="sc">%&gt;%</span> </span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(subject_id) <span class="sc">%&gt;%</span> </span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(subject_id, intime) <span class="sc">%&gt;%</span> </span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span>)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>icustays_tble</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 53,150 × 8
+# Groups:   subject_id [53,150]
+   subject_id  hadm_id  stay_id first_careunit       last_…¹ intime             
+        &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;                &lt;chr&gt;   &lt;dttm&gt;             
+ 1   10000032 29079034 39553978 Medical Intensive C… Medica… 2180-07-23 14:00:00
+ 2   10000980 26913865 39765666 Medical Intensive C… Medica… 2189-06-27 08:42:00
+ 3   10001217 24597018 37067082 Surgical Intensive … Surgic… 2157-11-20 19:18:02
+ 4   10001725 25563031 31205490 Medical/Surgical In… Medica… 2110-04-11 15:52:22
+ 5   10001884 26184834 37510196 Medical Intensive C… Medica… 2131-01-11 04:20:05
+ 6   10002013 23581541 39060235 Cardiac Vascular In… Cardia… 2160-05-18 10:00:53
+ 7   10002155 23822395 33685454 Coronary Care Unit … Corona… 2129-08-04 12:45:00
+ 8   10002223 22494570 39638202 Trauma SICU (TSICU)  Trauma… 2158-01-15 08:01:49
+ 9   10002348 22725460 32610785 Neuro Intermediate   Neuro … 2112-11-30 23:24:00
+10   10002428 28662225 33987268 Medical Intensive C… Medica… 2156-04-12 16:24:18
+# … with 53,140 more rows, 2 more variables: outtime &lt;dttm&gt;, los &lt;dbl&gt;, and
+#   abbreviated variable name ¹​last_careunit</code></pre>
+</div>
+</div>
 </section>
 <section id="q3.-admission-data" class="level2" data-number="3">
 <h2 data-number="3" class="anchored" data-anchor-id="q3.-admission-data"><span class="header-section-number">3</span> Q3. <code>admission</code> data</h2>
 <p>Information of the patients admitted into hospital is available in <code>admissions.csv.gz</code>. See <a href="https://mimic.mit.edu/docs/iv/modules/core/admissions/" class="uri">https://mimic.mit.edu/docs/iv/modules/core/admissions/</a> for details of each field in this file. The first 10 lines are</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_c</span>(</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcat &lt; "</span>, </span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(mimic_path, <span class="st">"/core/admissions.csv.gz"</span>), </span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">" | head"</span></span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    ), </span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">intern =</span> <span class="cn">TRUE</span></span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_c</span>(</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcat &lt; "</span>, </span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(mimic_path, <span class="st">"/core/admissions.csv.gz"</span>), </span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">" | head"</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    ), </span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">intern =</span> <span class="cn">TRUE</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "subject_id,hadm_id,admittime,dischtime,deathtime,admission_type,admission_location,discharge_location,insurance,language,marital_status,ethnicity,edregtime,edouttime,hospital_expire_flag"
  [2] "14679932,21038362,2139-09-26 14:16:00,2139-09-28 11:30:00,,ELECTIVE,,HOME,Other,ENGLISH,SINGLE,UNKNOWN,,,0"                                                                                
@@ -399,10 +512,15 @@ loaded via a namespace (and not attached):
 <li>Import <code>admissions.csv.gz</code> as a tibble <code>admissions_tble</code>.</li>
 </ol>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>admissions_tble <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"~/mimic/core/admissions.csv.gz"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>admissions_tble <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"~/mimic/core/admissions.csv.gz"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="2" type="1">
-<li><p>Let’s only keep the admissions that have a match in <code>icustays_tble</code> according to <code>subject_id</code> and <code>hadmi_id</code>.</p></li>
+<li>Let’s only keep the admissions that have a match in <code>icustays_tble</code> according to <code>subject_id</code> and <code>hadmi_id</code>.</li>
+</ol>
+<div class="cell" data-layout-align="center">
+
+</div>
+<ol start="3" type="1">
 <li><p>Summarize the following variables by graphics.</p>
 <ul>
 <li>admission year<br>
@@ -425,14 +543,14 @@ loaded via a namespace (and not attached):
 <h2 data-number="4" class="anchored" data-anchor-id="q4.-patients-data"><span class="header-section-number">4</span> Q4. <code>patients</code> data</h2>
 <p>Patient information is available in <code>patients.csv.gz</code>. See <a href="https://mimic.mit.edu/docs/iv/modules/core/patients/" class="uri">https://mimic.mit.edu/docs/iv/modules/core/patients/</a> for details of each field in this file. The first 10 lines are</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_c</span>(</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcat &lt; "</span>, </span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(mimic_path, <span class="st">"/core/patients.csv.gz"</span>), </span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">" | head"</span></span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    ), </span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">intern =</span> <span class="cn">TRUE</span></span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_c</span>(</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcat &lt; "</span>, </span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(mimic_path, <span class="st">"/core/patients.csv.gz"</span>), </span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">" | head"</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    ), </span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">intern =</span> <span class="cn">TRUE</span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "subject_id,gender,anchor_age,anchor_year,anchor_year_group,dod"
  [2] "10000048,F,23,2126,2008 - 2010,"                               
@@ -455,14 +573,14 @@ loaded via a namespace (and not attached):
 <h2 data-number="5" class="anchored" data-anchor-id="q5.-lab-results"><span class="header-section-number">5</span> Q5. Lab results</h2>
 <p><code>labevents.csv.gz</code> (<a href="https://mimic.mit.edu/docs/iv/modules/hosp/labevents/" class="uri">https://mimic.mit.edu/docs/iv/modules/hosp/labevents/</a>) contains all laboratory measurements for patients. The first 10 lines are</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_c</span>(</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcat &lt; "</span>, </span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(mimic_path, <span class="st">"/hosp/labevents.csv.gz"</span>), </span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">" | head"</span></span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    ), </span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">intern =</span> <span class="cn">TRUE</span></span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_c</span>(</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcat &lt; "</span>, </span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(mimic_path, <span class="st">"/hosp/labevents.csv.gz"</span>), </span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">" | head"</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>    ), </span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">intern =</span> <span class="cn">TRUE</span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "labevent_id,subject_id,hadm_id,specimen_id,itemid,charttime,storetime,value,valuenum,valueuom,ref_range_lower,ref_range_upper,flag,priority,comments"
  [2] "670,10000048,,6448755,51484,2126-11-22 19:20:00,2126-11-22 20:07:00,150,150,mg/dL,,,,STAT,"                                                          
@@ -478,14 +596,14 @@ loaded via a namespace (and not attached):
 </div>
 <p><code>d_labitems.csv.gz</code> is the dictionary of lab measurements.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_c</span>(</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcat &lt; "</span>, </span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(mimic_path, <span class="st">"/hosp/d_labitems.csv.gz"</span>), </span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">" | head"</span></span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    ), </span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">intern =</span> <span class="cn">TRUE</span></span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_c</span>(</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcat &lt; "</span>, </span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(mimic_path, <span class="st">"/hosp/d_labitems.csv.gz"</span>), </span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">" | head"</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    ), </span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">intern =</span> <span class="cn">TRUE</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "itemid,label,fluid,category,loinc_code"           
  [2] "51905, ,Other Body Fluid,Chemistry,"              
@@ -511,13 +629,13 @@ loaded via a namespace (and not attached):
 <h2 data-number="6" class="anchored" data-anchor-id="q6.-vitals-from-charted-events"><span class="header-section-number">6</span> Q6. Vitals from charted events</h2>
 <p><code>chartevents.csv.gz</code> (<a href="https://mimic.mit.edu/docs/iv/modules/icu/chartevents/" class="uri">https://mimic.mit.edu/docs/iv/modules/icu/chartevents/</a>) contains all the charted data available for a patient. During their ICU stay, the primary repository of a patient’s information is their electronic chart. The <code>itemid</code> variable indicates a single measurement type in the database. The <code>value</code> variable is the value measured for <code>itemid</code>. The first 10 lines of <code>chartevents.csv.gz</code> are</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_c</span>(</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcat &lt; "</span>, </span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(mimic_path, <span class="st">"/icu/chartevents.csv.gz"</span>), </span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">" | head"</span>), </span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">intern =</span> <span class="cn">TRUE</span></span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_c</span>(</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcat &lt; "</span>, </span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(mimic_path, <span class="st">"/icu/chartevents.csv.gz"</span>), </span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">" | head"</span>), </span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">intern =</span> <span class="cn">TRUE</span></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "subject_id,hadm_id,stay_id,charttime,storetime,itemid,value,valuenum,valueuom,warning"
  [2] "10003700,28623837,30600691,2165-04-24 05:10:00,2165-04-24 05:11:00,228236,0,0,,0"     
@@ -533,13 +651,13 @@ loaded via a namespace (and not attached):
 </div>
 <p><code>d_items.csv.gz</code> (<a href="https://mimic.mit.edu/docs/iv/modules/icu/d_items/" class="uri">https://mimic.mit.edu/docs/iv/modules/icu/d_items/</a>) is the dictionary for the <code>itemid</code> in <code>chartevents.csv.gz</code>.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_c</span>(</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcat &lt; "</span>, </span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(mimic_path, <span class="st">"/icu/d_items.csv.gz"</span>), </span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">" | head"</span>), </span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">intern =</span> <span class="cn">TRUE</span></span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_c</span>(</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcat &lt; "</span>, </span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(mimic_path, <span class="st">"/icu/d_items.csv.gz"</span>), </span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">" | head"</span>), </span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">intern =</span> <span class="cn">TRUE</span></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "itemid,label,abbreviation,linksto,category,unitname,param_type,lownormalvalue,highnormalvalue"   
  [2] "220003,ICU Admission date,ICU Admission date,datetimeevents,ADT,,Date and time,,"                
