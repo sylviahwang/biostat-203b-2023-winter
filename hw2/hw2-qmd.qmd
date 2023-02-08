@@ -179,19 +179,74 @@ admissions_tble <- read_csv("~/mimic/core/admissions.csv.gz")
 2. Let's only keep the admissions that have a match in `icustays_tble` according to `subject_id` and `hadmi_id`.
 
 ```{r}
-
+admissions_tble <- admissions_tble %>% 
+  semi_join(icustays_tble, by = c("subject_id", "hadm_id"))
+admissions_tble
 ```
-
 
 3. Summarize the following variables by graphics. 
 
     - admission year  
+```{r}
+ggplot(data = admissions_tble) + 
+  geom_bar(mapping = aes(x = year(admittime))) +
+  xlab("Admission year") 
+```
+
     - admission month  
+```{r}
+ggplot(data = admissions_tble) + 
+  geom_bar(mapping = aes(x = month(admittime))) +
+  scale_x_discrete(limits = month.abb) +
+  xlab("Admission month") 
+```
+    
     - admission month day  
+```{r}
+ggplot(data = admissions_tble) + 
+  geom_bar(mapping = aes(x = mday(admittime))) +
+  xlab("Admission month day") 
+```
+    
     - admission week day  
+```{r}
+ggplot(data = admissions_tble) + 
+  geom_bar(mapping = aes(x = wday(admittime))) +
+  scale_x_discrete(limits = c("Mon", "Tue", "Wed", "Thu", 
+                              "Fri", "Sat", "Sun")) +
+  xlab("Admission week day") 
+```
+    
     - admission hour (anything unusual?)  
+```{r}
+ggplot(data = admissions_tble) + 
+  geom_bar(mapping = aes(x = hour(admittime))) +
+  xlab("Admission hour") 
+```
+We can see a peak at 0 am and 7 am. The peak at 7 am is especially unusual, as the admission count for the nearby hours are all pretty low. Maybe less staff are present in the early morning, so admission information is not recorded immediately. Rather, most admissions around 5 ~ 10 am probably got recorded by the staff at 7 am (shift change-over time?).
+
     - admission minute (anything unusual?)  
-    - length of hospital stay (anything unusual?)    
+```{r}
+ggplot(data = admissions_tble) + 
+  geom_bar(mapping = aes(x = minute(admittime))) +
+  xlab("Admission minute") 
+```
+We can see four very distinct peaks at 0, 15, 30, and 45 minute. This is probably because sually the staffs like to use the numbers ending in 0 and 5 when recording admission. (People like to use whole numbers/ numbers ending in 0 or 5 in general).
+  
+    - length of hospital stay (anything unusual?)   
+```{r}
+ggplot(data = admissions_tble) + 
+  geom_bar(mapping = aes(x = difftime(dischtime, admittime, units = "days"))) +
+  xlab("Length of hospital stay (days)") 
+```
+    
+```{r}
+ggplot(data = admissions_tble) + 
+  geom_bar(mapping = aes(x = difftime(dischtime, admittime, units = "weeks"))) +
+  xlab("Length of hospital stay (weeks)") 
+```
+    
+What might be unusual is that the bars are tiny and we can only see the bars on the bottom left- I tried with using the unit as days and weeks and both look similar. I'm assuming there are patients who stayed for a fairly long period (different in length among themselves as well), thus it is hard to observe these people directly on the histogram.
     
 ## Q4. `patients` data
 
