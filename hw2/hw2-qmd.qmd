@@ -234,27 +234,24 @@ ggplot(data = admissions_tble) +
 We can see four very distinct peaks at 0, 15, 30, and 45 minute. This is probably because sually the staffs like to use the numbers ending in 0 and 5 when recording admission. (People like to use whole numbers/ numbers ending in 0 or 5 in general).
   
     - length of hospital stay (anything unusual?)   
+I drew two different graphs:
 ```{r}
 ggplot(data = admissions_tble) + 
-  geom_bar(mapping = aes(x = difftime(dischtime, admittime, units = "days"))) +
+  geom_bar(mapping = aes(x = as.integer(
+    difftime(dischtime, admittime, units = "days"))), 
+           width = 1) +
   xlab("Length of hospital stay (days)") 
 ```
-    
-```{r}
-ggplot(data = admissions_tble) + 
-  geom_bar(mapping = aes(x = difftime(dischtime, admittime, units = "weeks"))) +
-  xlab("Length of hospital stay (weeks)") 
-```
 
 ```{r}
 ggplot(data = admissions_tble) + 
-  geom_bar(mapping = aes(x = difftime(dischtime, admittime, units = "week"))) +
-  scale_x_continuous(limits = c(0, max(difftime(
-    admissions_tble$dischtime, admissions_tble$admittime, units = "week"))))
+  geom_bar(mapping = aes(x = difftime(dischtime, admittime, units = "days")), 
+           width = 1) +
+  xlab("Length of hospital stay (days)") 
 ```
+In the first graph, all the bars are near the left coner yet the x-axis still goes to more than 400. This might seem odd, but I assume this is due to there are a few people who had very long hospital stay.
 
-
-What might be unusual is that the bars are tiny and we can only see the bars on the bottom left- I tried with using the unit as days and weeks and both look similar. I'm assuming there are patients who stayed for a fairly long period (different in length among themselves as well), thus it is hard to observe these people directly on the histogram.
+This hypothesis can be supported by the second graph- we can see there are several people with very long hospital stays. In the second graph, the highest count for each length of hospital stay in the unit of days is no more than 25, which might seem odd. But this is because the length of hospital stay is treated as a continuous variable in the second graph, so it is hard for a lot of people to have exact same hospital stay length. 
     
 ## Q4. `patients` data
 
