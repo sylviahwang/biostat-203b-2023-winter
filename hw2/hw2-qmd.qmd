@@ -308,9 +308,8 @@ ggplot(patients_tble) +
   geom_bar(mapping = aes(x = anchor_age))
 ```
 
-
-There are slightly more males than females. The mean anchor age for all patients is around 63.5 with a median of 65.
-Male patients are generally younger than female patients. The mean anchor age for male is 62.5 with a median of 64, whereas the mean anchor age for female is 64.8 with a median of 67.
+There are slightly more male than female patients. The mean anchor age for all patients is around 63.5 with a median of 65.
+Male patients generally have a lower anchor age than female patients. The mean anchor age for male is 62.5 with a median of 64, whereas the mean anchor age for female is 64.8 with a median of 67.
 From the histogram we can see the distribution of anchor age is left skewed. There are more patients with older anchor age than younger anchor age. We observed a peak at age 91- we should go back to the codebook and see if 91 is actually an anchor age, or if it is a code for missing value.
 
 ## Q5. Lab results
@@ -340,13 +339,75 @@ system(
 
 1. Find how many rows are in `labevents.csv.gz`.
 
+```{r}
+nrow(read_csv("~/mimic/hosp/labevents_filtered_itemid.csv.gz"))
+```
+I read in `labevents_filtered_itemid.csv.gz` by `read_csv` and there are 30198826 lines.
+
+The `labevents.csv.gz` file was too big for `read_csv` function but it took a lot less time in bash. I also obtained the number of lines of `labevents.csv.gz` with bash code:
+```{bash}
+zcat < ~/mimic/hosp/labevents.csv.gz | tail -n +2 | wc -l 
+```
+There are 122103667 lines in the `labevents.csv.gz` file. The `tail -n +2` can cause the command to not count the title row, thus if I were to be able to count the rows of `labenets.csv.gz` using R code I would have got the same number: 122103667.
+
 2. We are interested in the lab measurements of creatinine (50912), potassium (50971), sodium (50983), chloride (50902), bicarbonate (50882), hematocrit (51221), white blood cell count (51301), and glucose (50931). Retrieve a subset of `labevents.csv.gz` only containing these items for the patients in `icustays_tble` as a tibble `labevents_tble`. 
 
     Hint: `labevents.csv.gz` is a data file too big to be read in by the `read_csv` function in its default setting. Utilize the `col_select` option in the `read_csv` function to reduce the memory burden. It took my computer 5-10 minutes to ingest this file. If your computer really has trouble importing `labevents.csv.gz`, you can import from the reduced data file `labevents_filtered_itemid.csv.gz`.
+```{r}
+labevents_tble <- read_csv("~/mimic/hosp/labevents_filtered_itemid.csv.gz") %>% 
+  semi_join(icustays_tble, by = "subject_id") %>% 
+  filter(itemid == 50912 | itemid == 50971 | 
+           itemid == 50983 | itemid == 50902 |
+           itemid == 50882 | itemid == 51221 | 
+           itemid == 51301 | itemid == 50931)
+```
 
 3. Further restrict `labevents_tble` to the first lab measurement during the ICU stay. 
 
+```{r}
+labevents_tble <- labevents_tble %>%
+  left_join(select(icustays_tble, subject_id, intime, outtime), 
+            by = "subject_id") %>% 
+  filter(charttime >= intime & charttime <= outtime) %>%
+  group_by(subject_id, itemid) %>%
+  arrange(.by_group = TRUE, charttime) %>% 
+  slice_head(n = 1)
+```
+
 4. Summarize the lab measurements by appropriate numerics and graphics. 
+
+```{r}
+labevents_tble <- labevents_tble %>%
+  mutate(itemcode = case_when(
+    itemid == 50882 ~ "bicarbonate",
+    itemid == 50902 ~ "chloride",
+    itemid == 50912 ~ "creatinine",
+    itemid == 50931 ~ "glucose",
+    itemid == 50971 ~ "potassium",
+    itemid == 50983 ~ "sodium",
+    itemid == 51221 ~ "hematocrit",
+    itemid == 51301 ~ "wbc count"
+  ))
+```
+
+
+```{r}
+table(labevents_tble$itemcode)
+```
+
+```{r}
+ggplot(labevents_tble) +
+  geom_bar(mapping = aes(x = itemcode, y = ..count..)) +
+  xlab("Lab measurement")
+```
+
+The table and histogram above show how many of each lab measurements are in `labevents_tble`. Based on the numbers it seems like almost everyone had all of the 8 lab measurements measured during their ICU stay.
+
+```{r}
+ggplot(labevents_tble) + 
+  geom_boxplot(mapping = aes(x = itemcode, y = valuenum))
+```
+
 
 ## Q6. Vitals from charted events
 
