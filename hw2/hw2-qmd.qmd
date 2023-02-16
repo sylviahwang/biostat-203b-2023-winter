@@ -524,6 +524,7 @@ table(chartevents_tble$itemcode)
 ```{r}
 ggplot(chartevents_tble) +
   geom_bar(mapping = aes(x = itemcode, y = ..count..)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   xlab("Vital measurement")
 ```
 Based on the numbers it seems like almost everyone had all of the 5 vitals measured during their ICU stay.
@@ -555,6 +556,7 @@ Visualizing the summary statistics of each vital measurement on box plot:
 ```{r warning=FALSE}
 ggplot(chartevents_tble) + 
   geom_boxplot(mapping = aes(x = itemcode, y = valuenum)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   xlab("Vital measurement")
 ```
 The box plot is less informative compares to directly looking at the summary statistics (unless we remove the outliers with extreme value).
@@ -604,6 +606,7 @@ table(mimic_icu_cohort$thirty_day_mort, mimic_icu_cohort$ethnicity)
 ```{r}
 ggplot(data = mimic_icu_cohort) +
   geom_bar(mapping = aes(x = ethnicity, fill = thirty_day_mort)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   ylab("30 day mortality")
 ```
 
@@ -769,6 +772,7 @@ table(mimic_icu_cohort$thirty_day_mort, mimic_icu_cohort$first_careunit)
 ```{r}
 ggplot(data = mimic_icu_cohort) +
   geom_bar(mapping = aes(x = first_careunit, fill = thirty_day_mort)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   xlab("first ICU unit") +
   ylab("30 day mortality")
 ```
