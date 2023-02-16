@@ -315,6 +315,8 @@ There are slightly more male than female patients. The mean anchor age for all p
 Male patients generally have a lower anchor age than female patients. The mean anchor age for male is 62.5 with a median of 64, whereas the mean anchor age for female is 64.8 with a median of 67.
 From the histogram we can see the distribution of anchor age is left skewed. There are more patients with older anchor age than younger anchor age. We observed a peak at age 91- we should go back to the codebook and see if 91 is actually an anchor age, or if it is a code for missing value.
 
+Update 2/15: According to MIMIC-IV data description ver. 2.2: All patients over 89 in the given anchor_year were grouped together into a single group with the value 91, regardless of their actual age. (<https://physionet.org/content/mimiciv/2.2/>)
+
 ## Q5. Lab results
 
 `labevents.csv.gz` (<https://mimic.mit.edu/docs/iv/modules/hosp/labevents/>) contains all laboratory measurements for patients. The first 10 lines are
@@ -568,15 +570,205 @@ Let us create a tibble `mimic_icu_cohort` for all ICU stays, where rows are the 
 - first vital measurements during ICU stay
 - an indicator variable `thirty_day_mort` whether the patient died within 30 days of hospital admission (30 day mortality)
 
+```{r}
+mimic_icu_cohort <- 
+  icustays_tble %>%
+  left_join(admissions_tble, by = c("subject_id", "hadm_id")) %>%
+  left_join(patients_tble, by = "subject_id") %>% 
+  left_join(subject_id_lab_tble, by = "subject_id") %>%
+  left_join(subject_vital_tble, by = c("subject_id", "hadm_id", "stay_id")) %>% 
+  mutate(age_hadm = anchor_age + year(admittime) - anchor_year) %>%
+  filter(age_hadm > 18) %>% 
+  mutate(hadm_to_death = 
+           ifelse(is.na(deathtime), Inf, deathtime-admittime)) %>%
+  mutate(thirty_day_mort = hadm_to_death <= 2592000) %>%
+  print(width = Inf)
+```
+
+```{r}
+table(mimic_icu_cohort$thirty_day_mort)
+```
+
+
 ## Q8. Exploratory data analysis (EDA)
 
 Summarize following information using appropriate numerics or graphs.
 
 - `thirty_day_mort` vs demographic variables (ethnicity, language, insurance, marital_status, gender, age at hospital admission)
 
-- `thirty_day_mort` vs first lab measurements
+`thirty_day_mort` vs `ethnicity`
+```{r}
+table(mimic_icu_cohort$thirty_day_mort, mimic_icu_cohort$ethnicity)
+```
 
-- `thirty_day_mort` vs first vital measurements
+```{r}
+ggplot(data = mimic_icu_cohort) +
+  geom_bar(mapping = aes(x = ethnicity, fill = thirty_day_mort)) +
+  ylab("30 day mortality")
+```
+
+`thirty_day_mort` vs `language`
+```{r}
+table(mimic_icu_cohort$thirty_day_mort, mimic_icu_cohort$language)
+```
+
+```{r}
+ggplot(data = mimic_icu_cohort) +
+  geom_bar(mapping = aes(x = language, fill = thirty_day_mort)) +
+  ylab("30 day mortality")
+```
+
+`thirty_day_mort` vs `insurance`
+```{r}
+table(mimic_icu_cohort$thirty_day_mort, mimic_icu_cohort$insurance)
+```
+
+```{r}
+ggplot(data = mimic_icu_cohort) +
+  geom_bar(mapping = aes(x = insurance, fill = thirty_day_mort)) +
+  ylab("30 day mortality")
+```
+
+`thirty_day_mort` vs `marital_status`
+```{r}
+table(mimic_icu_cohort$thirty_day_mort, mimic_icu_cohort$marital_status)
+```
+
+```{r}
+ggplot(data = mimic_icu_cohort) +
+  geom_bar(mapping = aes(x = marital_status, fill = thirty_day_mort)) +
+  xlab("marital status") +
+  ylab("30 day mortality")
+```
+
+`thirty_day_mort` vs `gender`
+```{r}
+table(mimic_icu_cohort$thirty_day_mort, mimic_icu_cohort$gender)
+```
+
+```{r}
+ggplot(data = mimic_icu_cohort) +
+  geom_bar(mapping = aes(x = gender, fill = thirty_day_mort)) +
+  ylab("30 day mortality")
+```
+
+`thirty_day_mort` vs `age_hadm`
+```{r}
+ggplot(data = mimic_icu_cohort) +
+  geom_bar(mapping = aes(x = age_hadm, fill = thirty_day_mort)) +
+  xlab("age at hospital admission") +
+  ylab("30 day mortality")
+```
+We can still see a peak at around age 91. The reason has been explained previously -  that all patients older than 89 were classified into a single group (91) regardless of their actual anchor age in a given anchor year.
+
+- `thirty_day_mort` vs first lab measurements (bicarbonate, chloride, creatinine, glucose, potassium, sodium, hematocrit, wbc_count)
+
+```{r warning = FALSE}
+ggplot(data = mimic_icu_cohort) +
+  geom_boxplot(mapping = aes(x = thirty_day_mort, y = bicarbonate)) +
+  xlab("30 day mortality") +
+  ylab("bicarbonate")   
+```
+
+```{r warning = FALSE}
+ggplot(data = mimic_icu_cohort) +
+  geom_boxplot(mapping = aes(x = thirty_day_mort, y = chloride)) +
+  xlab("30 day mortality") +
+  ylab("chloride")   
+```
+
+```{r warning = FALSE}
+ggplot(data = mimic_icu_cohort) +
+  geom_boxplot(mapping = aes(x = thirty_day_mort, y = creatinine)) +
+  xlab("30 day mortality") +
+  ylab("creatinine")   
+```
+
+```{r warning = FALSE}
+ggplot(data = mimic_icu_cohort) +
+  geom_boxplot(mapping = aes(x = thirty_day_mort, y = glucose)) +
+  xlab("30 day mortality") +
+  ylab("glucose")   
+```
+
+```{r warning = FALSE}
+ggplot(data = mimic_icu_cohort) +
+  geom_boxplot(mapping = aes(x = thirty_day_mort, y = potassium)) +
+  xlab("30 day mortality") +
+  ylab("potassium")   
+```
+
+```{r warning = FALSE}
+ggplot(data = mimic_icu_cohort) +
+  geom_boxplot(mapping = aes(x = thirty_day_mort, y = sodium)) +
+  xlab("30 day mortality") +
+  ylab("sodium")   
+```
+
+```{r warning = FALSE}
+ggplot(data = mimic_icu_cohort) +
+  geom_boxplot(mapping = aes(x = thirty_day_mort, y = hematocrit)) +
+  xlab("30 day mortality") +
+  ylab("hematocrit")   
+```
+
+```{r warning = FALSE}
+ggplot(data = mimic_icu_cohort) +
+  geom_boxplot(mapping = aes(x = thirty_day_mort, y = wbc_count)) +
+  xlab("30 day mortality") +
+  ylab("white blood cell count")   
+```
+
+- `thirty_day_mort` vs first vital measurements (heart_rate, non_invasive_bp_systolic, non_invasive_bp_mean, respiratory_rate, temp_f)
+
+```{r warning = FALSE}
+ggplot(data = mimic_icu_cohort) +
+  geom_boxplot(mapping = aes(x = thirty_day_mort, y = heart_rate)) +
+  xlab("30 day mortality") +
+  ylab("heart rate")   
+```
+
+```{r warning = FALSE}
+ggplot(data = mimic_icu_cohort) +
+  geom_boxplot(mapping = aes(x = thirty_day_mort, 
+                             y = non_invasive_bp_systolic)) +
+  xlab("30 day mortality") +
+  ylab("systolic non-invasive blood pressure")   
+```
+
+```{r warning = FALSE}
+ggplot(data = mimic_icu_cohort) +
+  geom_boxplot(mapping = aes(x = thirty_day_mort, 
+                             y = non_invasive_bp_mean)) +
+  xlab("30 day mortality") +
+  ylab("mean non-invasive blood pressure")   
+```
+
+```{r warning = FALSE}
+ggplot(data = mimic_icu_cohort) +
+  geom_boxplot(mapping = aes(x = thirty_day_mort, 
+                             y = respiratory_rate)) +
+  xlab("30 day mortality") +
+  ylab("respiratory rate")   
+```
+
+```{r warning = FALSE}
+ggplot(data = mimic_icu_cohort) +
+  geom_boxplot(mapping = aes(x = thirty_day_mort, 
+                             y = temp_f)) +
+  xlab("30 day mortality") +
+  ylab("body temperature in Fahrenheit")   
+```
 
 - `thirty_day_mort` vs first ICU unit
 
+```{r}
+table(mimic_icu_cohort$thirty_day_mort, mimic_icu_cohort$first_careunit)
+```
+
+```{r}
+ggplot(data = mimic_icu_cohort) +
+  geom_bar(mapping = aes(x = first_careunit, fill = thirty_day_mort)) +
+  xlab("first ICU unit") +
+  ylab("30 day mortality")
+```
