@@ -441,17 +441,19 @@ ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
 </ol>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>labevents_tble <span class="ot">&lt;-</span> <span class="fu">tbl</span>(con, <span class="st">"labevents"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">semi_join</span>(icustays_tble, <span class="at">by =</span> <span class="st">"subject_id"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(itemid <span class="sc">==</span> <span class="dv">50912</span> <span class="sc">|</span> itemid <span class="sc">==</span> <span class="dv">50971</span> <span class="sc">|</span> </span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>           itemid <span class="sc">==</span> <span class="dv">50983</span> <span class="sc">|</span> itemid <span class="sc">==</span> <span class="dv">50902</span> <span class="sc">|</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>           itemid <span class="sc">==</span> <span class="dv">50882</span> <span class="sc">|</span> itemid <span class="sc">==</span> <span class="dv">51221</span> <span class="sc">|</span> </span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>           itemid <span class="sc">==</span> <span class="dv">51301</span> <span class="sc">|</span> itemid <span class="sc">==</span> <span class="dv">50931</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_query</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(subject_id, itemid, charttime, valuenum) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">semi_join</span>(icustays_tble, <span class="at">by =</span> <span class="st">"subject_id"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(itemid <span class="sc">==</span> <span class="dv">50912</span> <span class="sc">|</span> itemid <span class="sc">==</span> <span class="dv">50971</span> <span class="sc">|</span> </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>           itemid <span class="sc">==</span> <span class="dv">50983</span> <span class="sc">|</span> itemid <span class="sc">==</span> <span class="dv">50902</span> <span class="sc">|</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>           itemid <span class="sc">==</span> <span class="dv">50882</span> <span class="sc">|</span> itemid <span class="sc">==</span> <span class="dv">51221</span> <span class="sc">|</span> </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>           itemid <span class="sc">==</span> <span class="dv">51301</span> <span class="sc">|</span> itemid <span class="sc">==</span> <span class="dv">50931</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_query</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;SQL&gt;
 SELECT *
-FROM (SELECT * FROM `labevents` AS `LHS`
+FROM (SELECT * FROM (SELECT `subject_id`, `itemid`, `charttime`, `valuenum`
+FROM `labevents`) `LHS`
 WHERE EXISTS (
   SELECT 1 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
 FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
@@ -464,44 +466,20 @@ ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
   WHERE (`LHS`.`subject_id` = `RHS`.`subject_id`)
 )) `q01`
 WHERE (`itemid` = 50912.0 OR `itemid` = 50971.0 OR `itemid` = 50983.0 OR `itemid` = 50902.0 OR `itemid` = 50882.0 OR `itemid` = 51221.0 OR `itemid` = 51301.0 OR `itemid` = 50931.0)
-# Source:   lazy query [?? x 15]
+# Source:   lazy query [?? x 4]
 # Database: BigQueryConnection
-   labevent_id subject_id  hadm_id specimen_id itemid charttime          
-         &lt;int&gt;      &lt;int&gt;    &lt;int&gt;       &lt;int&gt;  &lt;int&gt; &lt;dttm&gt;             
- 1      423688   10035168 23476073    97109057  50882 2146-12-14 06:35:00
- 2      436715   10035747 27083519    92304584  50882 2126-05-17 01:46:00
- 3      553981   10047172       NA    80331018  50971 2163-06-06 12:00:00
- 4      689265   10058952 25704608    68804470  50902 2133-11-21 00:45:00
- 5      697416   10059952 21462829    54728520  51221 2117-10-30 06:08:00
- 6      729536   10063848 21345067    35777054  50902 2177-08-01 06:55:00
- 7      868277   10074556       NA    74446439  50983 2128-10-24 08:00:00
- 8     1017189   10088966       NA    94400118  50983 2124-12-26 13:54:00
- 9     1017232   10088966       NA    39753278  50983 2125-01-18 09:35:00
-10     1021634   10088966       NA    77135135  51301 2128-08-09 11:30:00
-   storetime           value valuenum valueuom ref_range_lower ref_range_upper
-   &lt;dttm&gt;              &lt;chr&gt;    &lt;dbl&gt; &lt;chr&gt;              &lt;dbl&gt;           &lt;dbl&gt;
- 1 2146-12-14 09:29:00 28        28   mEq/L               22              32  
- 2 2126-05-17 02:39:00 28        28   mEq/L               22              32  
- 3 2163-06-06 12:45:00 5.6        5.6 mEq/L                3.3             5.1
- 4 2133-11-21 01:33:00 100      100   mEq/L               96             108  
- 5 2117-10-30 08:11:00 38.0      38   %                   40              52  
- 6 2177-08-01 07:59:00 100      100   mEq/L               96             108  
- 7 2128-10-24 08:54:00 140      140   mEq/L              133             145  
- 8 2124-12-26 17:20:00 142      142   mEq/L              133             145  
- 9 2125-01-18 10:24:00 139      139   mEq/L              133             145  
-10 2128-08-09 11:57:00 6.8        6.8 K/uL                 4              11  
-   flag     priority comments
-   &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt;   
- 1 &lt;NA&gt;     ROUTINE  &lt;NA&gt;    
- 2 &lt;NA&gt;     STAT     &lt;NA&gt;    
- 3 abnormal STAT     &lt;NA&gt;    
- 4 &lt;NA&gt;     STAT     &lt;NA&gt;    
- 5 abnormal ROUTINE  &lt;NA&gt;    
- 6 &lt;NA&gt;     ROUTINE  &lt;NA&gt;    
- 7 &lt;NA&gt;     STAT     &lt;NA&gt;    
- 8 &lt;NA&gt;     ROUTINE  &lt;NA&gt;    
- 9 &lt;NA&gt;     STAT     &lt;NA&gt;    
-10 &lt;NA&gt;     STAT     &lt;NA&gt;    
+   subject_id itemid charttime           valuenum
+        &lt;int&gt;  &lt;int&gt; &lt;dttm&gt;                 &lt;dbl&gt;
+ 1   10020852  51301 2172-03-08 12:15:00      8.4
+ 2   10020852  50882 2177-06-06 16:00:00     25  
+ 3   10035168  50983 2145-04-28 11:10:00    140  
+ 4   10035168  50902 2146-01-03 00:05:00    104  
+ 5   10035631  50983 2112-09-20 04:23:00    139  
+ 6   10035631  50882 2112-11-02 12:10:00     27  
+ 7   10035631  51221 2113-03-08 09:20:00     39.2
+ 8   10035631  50912 2116-02-29 03:23:00      1  
+ 9   10043122  50983 2167-09-17 17:21:00    135  
+10   10046166  51221 2133-08-21 12:40:00     35.7
 # … with more rows</code></pre>
 </div>
 </div>
@@ -529,7 +507,7 @@ WHERE (`itemid` = 50912.0 OR `itemid` = 50971.0 OR `itemid` = 50983.0 OR `itemid
 <span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;SQL&gt;
-SELECT `subject_id`, MAX(IF(`itemid` = 'potassium', `valuenum`, NULL)) AS `potassium`, MAX(IF(`itemid` = 'wbc_count', `valuenum`, NULL)) AS `wbc_count`, MAX(IF(`itemid` = 'chloride', `valuenum`, NULL)) AS `chloride`, MAX(IF(`itemid` = 'hematocrit', `valuenum`, NULL)) AS `hematocrit`, MAX(IF(`itemid` = 'sodium', `valuenum`, NULL)) AS `sodium`, MAX(IF(`itemid` = 'bicarbonate', `valuenum`, NULL)) AS `bicarbonate`, MAX(IF(`itemid` = 'creatinine', `valuenum`, NULL)) AS `creatinine`, MAX(IF(`itemid` = 'glucose', `valuenum`, NULL)) AS `glucose`
+SELECT `subject_id`, MAX(IF(`itemid` = 'sodium', `valuenum`, NULL)) AS `sodium`, MAX(IF(`itemid` = 'chloride', `valuenum`, NULL)) AS `chloride`, MAX(IF(`itemid` = 'potassium', `valuenum`, NULL)) AS `potassium`, MAX(IF(`itemid` = 'bicarbonate', `valuenum`, NULL)) AS `bicarbonate`, MAX(IF(`itemid` = 'hematocrit', `valuenum`, NULL)) AS `hematocrit`, MAX(IF(`itemid` = 'creatinine', `valuenum`, NULL)) AS `creatinine`, MAX(IF(`itemid` = 'wbc_count', `valuenum`, NULL)) AS `wbc_count`, MAX(IF(`itemid` = 'glucose', `valuenum`, NULL)) AS `glucose`
 FROM (SELECT `subject_id`, CASE
 WHEN (`itemid` = 50882.0) THEN ('bicarbonate')
 WHEN (`itemid` = 50902.0) THEN ('chloride')
@@ -541,10 +519,11 @@ WHEN (`itemid` = 51221.0) THEN ('hematocrit')
 WHEN (`itemid` = 51301.0) THEN ('wbc_count')
 END AS `itemid`, `valuenum`
 FROM (SELECT `subject_id`, `itemid`, `valuenum`
-FROM (SELECT `subject_id`, `itemid`, MIN(`labevent_id`) AS `labevent_id`, MIN(`hadm_id`) AS `hadm_id`, MIN(`specimen_id`) AS `specimen_id`, MIN(`charttime`) AS `charttime`, MIN(`storetime`) AS `storetime`, MIN(`value`) AS `value`, MIN(`valuenum`) AS `valuenum`, MIN(`valueuom`) AS `valueuom`, MIN(`ref_range_lower`) AS `ref_range_lower`, MIN(`ref_range_upper`) AS `ref_range_upper`, MIN(`flag`) AS `flag`, MIN(`priority`) AS `priority`, MIN(`comments`) AS `comments`, MIN(`intime`) AS `intime`, MIN(`outtime`) AS `outtime`
-FROM (SELECT `labevent_id`, `LHS`.`subject_id` AS `subject_id`, `hadm_id`, `specimen_id`, `itemid`, `charttime`, `storetime`, `value`, `valuenum`, `valueuom`, `ref_range_lower`, `ref_range_upper`, `flag`, `priority`, `comments`, `intime`, `outtime`
+FROM (SELECT `subject_id`, `itemid`, MIN(`charttime`) AS `charttime`, MIN(`valuenum`) AS `valuenum`, MIN(`intime`) AS `intime`, MIN(`outtime`) AS `outtime`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `itemid`, `charttime`, `valuenum`, `intime`, `outtime`
 FROM (SELECT *
-FROM (SELECT * FROM `labevents` AS `LHS`
+FROM (SELECT * FROM (SELECT `subject_id`, `itemid`, `charttime`, `valuenum`
+FROM `labevents`) `LHS`
 WHERE EXISTS (
   SELECT 1 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
 FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
@@ -573,30 +552,30 @@ GROUP BY `subject_id`, `itemid`) `q03`) `q04`) `q05`
 GROUP BY `subject_id`
 # Source:   lazy query [?? x 9]
 # Database: BigQueryConnection
-   subject_id potassium wbc_count chloride hematocrit sodium bicarbonate
-        &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;  &lt;dbl&gt;       &lt;dbl&gt;
- 1   10043122       3.1       6.7      103       24.4    134          17
- 2   10220107       3.6       3.4       98       23.4    133          22
- 3   10222191       3         7.6       86       16.8    102          12
- 4   10254097       3.1       7.3      101       36.1    138          24
- 5   10297708       3.2       6.6       88       20.5    124          17
- 6   10331862       4.2       6.5      102       33.6    135          24
- 7   10377337       3.9       6.5       97       37.1    134          26
- 8   10445502       3.5       7.3      105       23.5    136          22
- 9   10447495       3.4       9.5      102       33.9    140          26
-10   10450386       3.5       6.7      101       24.2    136          23
-   creatinine glucose
-        &lt;dbl&gt;   &lt;dbl&gt;
- 1        0.2      88
- 2        1.1     102
- 3        0.7      69
- 4        0.3     116
- 5        1.5      65
- 6        1.4      94
- 7        0.6     138
- 8        0.4     107
- 9        0.4      84
-10        0.7     105
+   subject_id sodium chloride potassium bicarbonate hematocrit creatinine
+        &lt;int&gt;  &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;
+ 1   10026161    130       96       4.1          15       24.8        1.4
+ 2   10035631    126       86       3.4          16       19.4        1  
+ 3   10041790    136      101       4.1          24       28.6        0.8
+ 4   10051872    137      113       4.2          12       45.9        1.1
+ 5   10135398    125       93       2.9          16       25.1        0.5
+ 6   10199711    128       98       5            19       23.7        0.5
+ 7   10222191    102       86       3            12       16.8        0.7
+ 8   10360766    134      100       3.9          18       36.7        0.7
+ 9   10378217    136      103       4.3          23       30.8        0.6
+10   10431522    139      102       3.8          22       31.7        1.5
+   wbc_count glucose
+       &lt;dbl&gt;   &lt;dbl&gt;
+ 1      10.8     118
+ 2       0.1      96
+ 3       7.1     109
+ 4      16.8      81
+ 5       4.3      80
+ 6      11.6     100
+ 7       7.6      69
+ 8       7.8      73
+ 9      10.1     148
+10       5.3     121
 # … with more rows</code></pre>
 </div>
 </div>

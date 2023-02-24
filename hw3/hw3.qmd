@@ -114,6 +114,7 @@ patients_tble <- tbl(con, "patients") %>%
 
 ```{r}
 labevents_tble <- tbl(con, "labevents") %>%
+  select(subject_id, itemid, charttime, valuenum) %>% 
   semi_join(icustays_tble, by = "subject_id") %>% 
   filter(itemid == 50912 | itemid == 50971 | 
            itemid == 50983 | itemid == 50902 |
