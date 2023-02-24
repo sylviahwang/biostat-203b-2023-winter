@@ -148,13 +148,33 @@ labevents_tble <- labevents_tble %>%
 
 7. Connect to `chartevents` table and retrieve a subset that only contain subjects who appear in `icustays_tble` and the chart events listed in HW2.
 ```{r}
-# # TODO
-# chartevents_tble <- 
+chartevents_tble <- tbl(con, "chartevents") %>%
+  semi_join(icustays_tble, by = "subject_id") %>% 
+  filter(itemid == 220045 | itemid == 220181 | 
+           itemid == 220179 | itemid == 223761 |
+           itemid == 220210) %>% 
+  show_query() %>%
+  print(width = Inf)
 ```
 Only keep the first chart events during ICU stay and pivot chart events to become variables/columns.
 ```{r}
-# # TODO
-# chartevents_tble <- chartevents_tble %>% ...
+chartevents_tble <- chartevents_tble %>%
+  left_join(select(icustays_tble, subject_id, intime, outtime), 
+            by = "subject_id") %>% 
+  filter(charttime >= intime & charttime <= outtime) %>%
+  group_by(subject_id, itemid) %>%
+  summarise_all(min) %>%
+  select(subject_id, hadm_id, stay_id, itemid, valuenum) %>%
+  ungroup() %>%
+  mutate(itemid = case_when(
+    itemid == 220045 ~ "heart_rate",
+    itemid == 220181 ~ "bp_mean",
+    itemid == 220179 ~ "bp_systolic",
+    itemid == 223761 ~ "temp",
+    itemid == 220210 ~ "resp_rate")) %>% 
+  pivot_wider(names_from = itemid, values_from = valuenum) %>%
+  show_query() %>% 
+  print(width = Inf)
 ```
 
 8. Put things together. This step is similar to Q7 of HW2. Using one chain of pipes `%>%` to perform following data wrangling steps: (i) start with the `icustays_tble` for the first ICU stay of each unique patient, (ii) merge in admissions and patients tables, (iii) keep adults only (age at admission >= 18), (iv) merge in the labevents and chartevents tables, (v) create an indicator for 30-day mortality, (vi) save the final tibble to an `icu_cohort.rds` R data file in the `mimiciv_shiny` folder.
