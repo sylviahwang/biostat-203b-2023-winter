@@ -722,13 +722,274 @@ GROUP BY `subject_id`, `hadm_id`, `stay_id`
 <span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># # </span><span class="al">TODO</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co"># icu_cohort &lt;- icustays_tble %&gt;% ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>icu_cohort <span class="ot">&lt;-</span> icustays_tble <span class="sc">%&gt;%</span> </span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(admissions_tble, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"subject_id"</span>, <span class="st">"hadm_id"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(patients_tble, <span class="at">by =</span> <span class="st">"subject_id"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">age_hadm =</span> anchor_age <span class="sc">+</span> <span class="fu">year</span>(admittime) <span class="sc">-</span> anchor_year) <span class="sc">%&gt;%</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(age_hadm <span class="sc">&gt;=</span> <span class="dv">18</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(labevents_tble, <span class="at">by =</span> <span class="st">"subject_id"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(chartevents_tble, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"subject_id"</span>, <span class="st">"hadm_id"</span>, <span class="st">"stay_id"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">thirty_day_mort =</span> </span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">case_when</span>(<span class="fu">is.na</span>(<span class="fu">day</span>(dod) <span class="sc">-</span> <span class="fu">day</span>(admittime)) <span class="sc">~</span> <span class="cn">FALSE</span>, </span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>                     (<span class="fu">day</span>(dod) <span class="sc">-</span> <span class="fu">day</span>(admittime) <span class="sc">&gt;</span> <span class="dv">30</span>) <span class="sc">~</span> <span class="cn">FALSE</span>, </span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>                     (<span class="fu">day</span>(dod) <span class="sc">-</span> <span class="fu">day</span>(admittime) <span class="sc">&lt;=</span> <span class="dv">30</span>) <span class="sc">~</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_query</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(<span class="st">"./mimiciv_shiny/icu_cohort.rds"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;SQL&gt;
+SELECT `subject_id`, `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`, `gender`, `anchor_age`, `anchor_year`, `anchor_year_group`, `dod`, `age_hadm`, `sodium`, `chloride`, `potassium`, `bicarbonate`, `hematocrit`, `creatinine`, `wbc_count`, `glucose`, `bp_systolic`, `bp_mean`, `resp_rate`, `heart_rate`, `temp`, CASE
+WHEN (((EXTRACT(day FROM `dod`) - EXTRACT(day FROM `admittime`)) IS NULL)) THEN (FALSE)
+WHEN ((EXTRACT(day FROM `dod`) - EXTRACT(day FROM `admittime`) &gt; 30.0)) THEN (FALSE)
+WHEN ((EXTRACT(day FROM `dod`) - EXTRACT(day FROM `admittime`) &lt;= 30.0)) THEN (TRUE)
+END AS `thirty_day_mort`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `intime`, `LHS`.`hadm_id` AS `hadm_id`, `LHS`.`stay_id` AS `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`, `gender`, `anchor_age`, `anchor_year`, `anchor_year_group`, `dod`, `age_hadm`, `sodium`, `chloride`, `potassium`, `bicarbonate`, `hematocrit`, `creatinine`, `wbc_count`, `glucose`, `bp_systolic`, `bp_mean`, `resp_rate`, `heart_rate`, `temp`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`, `gender`, `anchor_age`, `anchor_year`, `anchor_year_group`, `dod`, `age_hadm`, `sodium`, `chloride`, `potassium`, `bicarbonate`, `hematocrit`, `creatinine`, `wbc_count`, `glucose`
+FROM (SELECT *
+FROM (SELECT `subject_id`, `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`, `gender`, `anchor_age`, `anchor_year`, `anchor_year_group`, `dod`, `anchor_age` + EXTRACT(year FROM `admittime`) - `anchor_year` AS `age_hadm`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`, `gender`, `anchor_age`, `anchor_year`, `anchor_year_group`, `dod`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `intime`, `LHS`.`hadm_id` AS `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `LHS`
+LEFT JOIN (SELECT * FROM `admissions` AS `LHS`
+WHERE EXISTS (
+  SELECT 1 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `RHS`
+  WHERE (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`hadm_id` = `RHS`.`hadm_id`)
+)) `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`hadm_id` = `RHS`.`hadm_id`)
+) `LHS`
+LEFT JOIN (SELECT * FROM `patients` AS `LHS`
+WHERE EXISTS (
+  SELECT 1 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `RHS`
+  WHERE (`LHS`.`subject_id` = `RHS`.`subject_id`)
+)) `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id`)
+) `q01`) `q02`
+WHERE (`age_hadm` &gt;= 18.0)) `LHS`
+LEFT JOIN (SELECT `subject_id`, MAX(IF(`itemid` = 'sodium', `valuenum`, NULL)) AS `sodium`, MAX(IF(`itemid` = 'chloride', `valuenum`, NULL)) AS `chloride`, MAX(IF(`itemid` = 'potassium', `valuenum`, NULL)) AS `potassium`, MAX(IF(`itemid` = 'bicarbonate', `valuenum`, NULL)) AS `bicarbonate`, MAX(IF(`itemid` = 'hematocrit', `valuenum`, NULL)) AS `hematocrit`, MAX(IF(`itemid` = 'creatinine', `valuenum`, NULL)) AS `creatinine`, MAX(IF(`itemid` = 'wbc_count', `valuenum`, NULL)) AS `wbc_count`, MAX(IF(`itemid` = 'glucose', `valuenum`, NULL)) AS `glucose`
+FROM (SELECT `subject_id`, CASE
+WHEN (`itemid` = 50882.0) THEN ('bicarbonate')
+WHEN (`itemid` = 50902.0) THEN ('chloride')
+WHEN (`itemid` = 50912.0) THEN ('creatinine')
+WHEN (`itemid` = 50931.0) THEN ('glucose')
+WHEN (`itemid` = 50971.0) THEN ('potassium')
+WHEN (`itemid` = 50983.0) THEN ('sodium')
+WHEN (`itemid` = 51221.0) THEN ('hematocrit')
+WHEN (`itemid` = 51301.0) THEN ('wbc_count')
+END AS `itemid`, `valuenum`
+FROM (SELECT `subject_id`, `itemid`, `valuenum`
+FROM (SELECT `subject_id`, `itemid`, MIN(`charttime`) AS `charttime`, MIN(`valuenum`) AS `valuenum`, MIN(`intime`) AS `intime`, MIN(`outtime`) AS `outtime`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `itemid`, `charttime`, `valuenum`, `intime`, `outtime`
+FROM (SELECT *
+FROM (SELECT * FROM (SELECT `subject_id`, `itemid`, `charttime`, `valuenum`
+FROM `labevents`) `LHS`
+WHERE EXISTS (
+  SELECT 1 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `RHS`
+  WHERE (`LHS`.`subject_id` = `RHS`.`subject_id`)
+)) `q01`
+WHERE (`itemid` = 50912.0 OR `itemid` = 50971.0 OR `itemid` = 50983.0 OR `itemid` = 50902.0 OR `itemid` = 50882.0 OR `itemid` = 51221.0 OR `itemid` = 51301.0 OR `itemid` = 50931.0)) `LHS`
+LEFT JOIN (SELECT `subject_id`, `intime`, `outtime`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `q01`) `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id`)
+) `q02`
+WHERE (`charttime` &gt;= `intime` AND `charttime` &lt;= `outtime`)
+GROUP BY `subject_id`, `itemid`) `q03`) `q04`) `q05`
+GROUP BY `subject_id`) `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id`)
+) `LHS`
+LEFT JOIN (SELECT `subject_id`, `hadm_id`, `stay_id`, MAX(IF(`itemid` = 'bp_systolic', `valuenum`, NULL)) AS `bp_systolic`, MAX(IF(`itemid` = 'bp_mean', `valuenum`, NULL)) AS `bp_mean`, MAX(IF(`itemid` = 'resp_rate', `valuenum`, NULL)) AS `resp_rate`, MAX(IF(`itemid` = 'heart_rate', `valuenum`, NULL)) AS `heart_rate`, MAX(IF(`itemid` = 'temp', `valuenum`, NULL)) AS `temp`
+FROM (SELECT `subject_id`, `hadm_id`, `stay_id`, CASE
+WHEN (`itemid` = 220045.0) THEN ('heart_rate')
+WHEN (`itemid` = 220181.0) THEN ('bp_mean')
+WHEN (`itemid` = 220179.0) THEN ('bp_systolic')
+WHEN (`itemid` = 223761.0) THEN ('temp')
+WHEN (`itemid` = 220210.0) THEN ('resp_rate')
+END AS `itemid`, `valuenum`
+FROM (SELECT `subject_id`, `hadm_id`, `stay_id`, `itemid`, `valuenum`
+FROM (SELECT `subject_id`, `itemid`, MIN(`hadm_id`) AS `hadm_id`, MIN(`stay_id`) AS `stay_id`, MIN(`charttime`) AS `charttime`, MIN(`storetime`) AS `storetime`, MIN(`value`) AS `value`, MIN(`valuenum`) AS `valuenum`, MIN(`valueuom`) AS `valueuom`, MIN(`warning`) AS `warning`, MIN(`intime`) AS `intime`, MIN(`outtime`) AS `outtime`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `hadm_id`, `stay_id`, `charttime`, `storetime`, `itemid`, `value`, `valuenum`, `valueuom`, `warning`, `intime`, `outtime`
+FROM (SELECT *
+FROM (SELECT * FROM `chartevents` AS `LHS`
+WHERE EXISTS (
+  SELECT 1 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `RHS`
+  WHERE (`LHS`.`subject_id` = `RHS`.`subject_id`)
+)) `q01`
+WHERE (`itemid` = 220045.0 OR `itemid` = 220181.0 OR `itemid` = 220179.0 OR `itemid` = 223761.0 OR `itemid` = 220210.0)) `LHS`
+LEFT JOIN (SELECT `subject_id`, `intime`, `outtime`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `q01`) `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id`)
+) `q02`
+WHERE (`charttime` &gt;= `intime` AND `charttime` &lt;= `outtime`)
+GROUP BY `subject_id`, `itemid`) `q03`) `q04`) `q05`
+GROUP BY `subject_id`, `hadm_id`, `stay_id`) `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`hadm_id` = `RHS`.`hadm_id` AND `LHS`.`stay_id` = `RHS`.`stay_id`)
+) `q06`
+# Source:   lazy query [?? x 41]
+# Database: BigQueryConnection
+   subject_id intime               hadm_id  stay_id first_careunit
+        &lt;int&gt; &lt;dttm&gt;                 &lt;int&gt;    &lt;int&gt; &lt;chr&gt;         
+ 1   12776735 2200-07-12 00:33:00 20817525 34547665 Neuro Stepdown
+ 2   16256226 2150-12-20 16:09:08 20013290 39289362 Neuro Stepdown
+ 3   12974563 2138-11-13 23:30:01 29618057 32563675 Neuro Stepdown
+ 4   14609218 2174-06-28 21:13:00 20606189 34947848 Neuro Stepdown
+ 5   12687112 2162-05-31 18:08:45 26132667 37445058 Neuro Stepdown
+ 6   18190935 2115-11-12 23:23:32 21137829 34338402 Neuro Stepdown
+ 7   10404210 2161-03-03 18:30:00 22880512 30254828 Neuro Stepdown
+ 8   12552973 2135-09-21 18:12:03 21320643 30261549 Neuro Stepdown
+ 9   14303051 2175-11-20 01:02:00 26559537 30401486 Neuro Stepdown
+10   12347959 2140-07-11 17:54:14 22779073 30503984 Neuro Stepdown
+   last_careunit  outtime               los admittime          
+   &lt;chr&gt;          &lt;dttm&gt;              &lt;dbl&gt; &lt;dttm&gt;             
+ 1 Neuro Stepdown 2200-07-13 16:44:40 1.67  2200-07-11 22:46:00
+ 2 Neuro Stepdown 2150-12-21 14:58:40 0.951 2150-12-20 03:00:00
+ 3 Neuro Stepdown 2138-11-15 16:25:19 1.71  2138-11-13 01:07:00
+ 4 Neuro Stepdown 2174-07-05 17:01:32 6.83  2174-06-28 20:40:00
+ 5 Neuro Stepdown 2162-06-04 10:16:13 3.67  2162-05-31 15:36:00
+ 6 Neuro Stepdown 2115-11-15 18:06:26 2.78  2115-11-02 18:38:00
+ 7 Neuro Stepdown 2161-03-05 18:10:31 1.99  2161-03-03 17:45:00
+ 8 Neuro Stepdown 2135-09-23 12:56:46 1.78  2135-09-21 02:12:00
+ 9 Neuro Stepdown 2175-11-21 16:06:17 1.63  2175-11-20 00:08:00
+10 Neuro Stepdown 2140-07-19 13:01:05 7.80  2140-07-11 17:52:00
+   dischtime           deathtime admission_type             
+   &lt;dttm&gt;              &lt;dttm&gt;    &lt;chr&gt;                      
+ 1 2200-07-19 12:00:00 NA        OBSERVATION ADMIT          
+ 2 2150-12-21 14:50:00 NA        SURGICAL SAME DAY ADMISSION
+ 3 2138-11-15 15:53:00 NA        OBSERVATION ADMIT          
+ 4 2174-07-05 16:45:00 NA        OBSERVATION ADMIT          
+ 5 2162-06-04 10:16:00 NA        OBSERVATION ADMIT          
+ 6 2115-11-26 14:30:00 NA        OBSERVATION ADMIT          
+ 7 2161-03-05 18:10:00 NA        OBSERVATION ADMIT          
+ 8 2135-09-23 12:56:00 NA        SURGICAL SAME DAY ADMISSION
+ 9 2175-11-21 15:30:00 NA        OBSERVATION ADMIT          
+10 2140-07-19 13:00:00 NA        URGENT                     
+   admission_location     discharge_location           insurance language
+   &lt;chr&gt;                  &lt;chr&gt;                        &lt;chr&gt;     &lt;chr&gt;   
+ 1 EMERGENCY ROOM         SKILLED NURSING FACILITY     Medicare  ENGLISH 
+ 2 PHYSICIAN REFERRAL     HOME                         Other     ENGLISH 
+ 3 EMERGENCY ROOM         HOME HEALTH CARE             Other     ENGLISH 
+ 4 EMERGENCY ROOM         REHAB                        Other     ENGLISH 
+ 5 PHYSICIAN REFERRAL     HOME                         Other     ENGLISH 
+ 6 TRANSFER FROM HOSPITAL CHRONIC/LONG TERM ACUTE CARE Other     ENGLISH 
+ 7 EMERGENCY ROOM         HOME                         Other     ENGLISH 
+ 8 PHYSICIAN REFERRAL     HOME                         Other     ENGLISH 
+ 9 EMERGENCY ROOM         HOME                         Other     ENGLISH 
+10 TRANSFER FROM HOSPITAL REHAB                        Other     ENGLISH 
+   marital_status ethnicity              edregtime           edouttime          
+   &lt;chr&gt;          &lt;chr&gt;                  &lt;dttm&gt;              &lt;dttm&gt;             
+ 1 MARRIED        OTHER                  2200-07-11 15:27:00 2200-07-12 00:33:00
+ 2 SINGLE         OTHER                  NA                  NA                 
+ 3 WIDOWED        WHITE                  2138-11-12 17:26:00 2138-11-13 20:21:00
+ 4 SINGLE         WHITE                  2174-06-28 18:46:00 2174-06-28 21:13:00
+ 5 SINGLE         BLACK/AFRICAN AMERICAN 2162-05-31 09:36:00 2162-05-31 19:59:00
+ 6 DIVORCED       WHITE                  2115-11-02 13:59:00 2115-11-02 22:17:00
+ 7 MARRIED        HISPANIC/LATINO        2161-03-03 13:39:00 2161-03-03 18:30:00
+ 8 MARRIED        WHITE                  NA                  NA                 
+ 9 SINGLE         WHITE                  2175-11-19 10:42:00 2175-11-20 01:02:00
+10 MARRIED        WHITE                  NA                  NA                 
+   hospital_expire_flag gender anchor_age anchor_year anchor_year_group
+                  &lt;int&gt; &lt;chr&gt;       &lt;int&gt;       &lt;int&gt; &lt;chr&gt;            
+ 1                    0 M              72        2192 2008 - 2010      
+ 2                    0 F              49        2150 2017 - 2019      
+ 3                    0 F              72        2138 2014 - 2016      
+ 4                    0 F              69        2174 2017 - 2019      
+ 5                    0 M              57        2156 2011 - 2013      
+ 6                    0 F              57        2115 2017 - 2019      
+ 7                    0 F              46        2161 2017 - 2019      
+ 8                    0 F              48        2131 2011 - 2013      
+ 9                    0 F              24        2175 2014 - 2016      
+10                    0 F              49        2140 2017 - 2019      
+   dod        age_hadm sodium chloride potassium bicarbonate hematocrit
+   &lt;date&gt;        &lt;int&gt;  &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;
+ 1 NA               80    129       97       2.7          22       27.7
+ 2 NA               49    141      108       4            21       30.5
+ 3 NA               72    139      104       4.4          16       41.6
+ 4 NA               69    129       95       3.5          23       29.6
+ 5 NA               63    143      105       4.9          19       29.4
+ 6 2115-12-11       57    130       93       3.8          23       29.4
+ 7 NA               46    137      104       4.1          26       32.5
+ 8 NA               52    141      104       4            22       36.1
+ 9 NA               24    138      103       4.1          24       34.7
+10 NA               49    135       98       3.7          19       32.1
+   creatinine wbc_count glucose bp_systolic bp_mean resp_rate heart_rate  temp
+        &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;
+ 1        0.9       6.6     106          98      55        11         51  97.8
+ 2        0.5       3.5      99          94      69         5         54  97.7
+ 3        1        10.6      78         123      80         8         59  97.9
+ 4        0.4       8.4      94          93      71         8         65  97.5
+ 5        7.8       5.3      87         118      76         0         72  97.7
+ 6        0.4       9.2      78         114      85        13         57  97.6
+ 7        0.7       3.6      99          77      57        11         67  97.6
+ 8        0.7      14.7     155         109      70        10         55  97.9
+ 9        0.8       6.4      85          71      50         0         51  97.6
+10        0.5       7.6      81         105      49         7         69  97.5
+   thirty_day_mort
+   &lt;lgl&gt;          
+ 1 FALSE          
+ 2 FALSE          
+ 3 FALSE          
+ 4 FALSE          
+ 5 FALSE          
+ 6 TRUE           
+ 7 FALSE          
+ 8 FALSE          
+ 9 FALSE          
+10 FALSE          
+# … with more rows</code></pre>
+</div>
 </div>
 <p>Close database connection and clear workspace.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="q2.-shiny-app" class="level2" data-number="2">
