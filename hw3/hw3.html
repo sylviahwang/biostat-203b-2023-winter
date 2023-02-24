@@ -730,9 +730,9 @@ GROUP BY `subject_id`, `hadm_id`, `stay_id`
 <span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(labevents_tble, <span class="at">by =</span> <span class="st">"subject_id"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(chartevents_tble, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"subject_id"</span>, <span class="st">"hadm_id"</span>, <span class="st">"stay_id"</span>)) <span class="sc">%&gt;%</span> </span>
 <span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">thirty_day_mort =</span> </span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">case_when</span>(<span class="fu">is.na</span>(<span class="fu">day</span>(dod) <span class="sc">-</span> <span class="fu">day</span>(admittime)) <span class="sc">~</span> <span class="cn">FALSE</span>, </span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>                     (<span class="fu">day</span>(dod) <span class="sc">-</span> <span class="fu">day</span>(admittime) <span class="sc">&gt;</span> <span class="dv">30</span>) <span class="sc">~</span> <span class="cn">FALSE</span>, </span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>                     (<span class="fu">day</span>(dod) <span class="sc">-</span> <span class="fu">day</span>(admittime) <span class="sc">&lt;=</span> <span class="dv">30</span>) <span class="sc">~</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">case_when</span>(<span class="fu">is.na</span>(<span class="fu">second</span>(deathtime) <span class="sc">-</span> <span class="fu">second</span>(admittime)) <span class="sc">~</span> <span class="cn">FALSE</span>, </span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>                     (<span class="fu">second</span>(deathtime) <span class="sc">-</span> <span class="fu">second</span>(admittime) <span class="sc">&gt;</span> <span class="dv">2592000</span>) <span class="sc">~</span> <span class="cn">FALSE</span>, </span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>                     (<span class="fu">second</span>(deathtime) <span class="sc">-</span> <span class="fu">second</span>(admittime) <span class="sc">&lt;=</span> <span class="dv">2592000</span>) <span class="sc">~</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
 <span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_query</span>() <span class="sc">%&gt;%</span> </span>
 <span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>() <span class="sc">%&gt;%</span> </span>
@@ -740,9 +740,9 @@ GROUP BY `subject_id`, `hadm_id`, `stay_id`
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;SQL&gt;
 SELECT `subject_id`, `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`, `gender`, `anchor_age`, `anchor_year`, `anchor_year_group`, `dod`, `age_hadm`, `sodium`, `chloride`, `potassium`, `bicarbonate`, `hematocrit`, `creatinine`, `wbc_count`, `glucose`, `bp_systolic`, `bp_mean`, `resp_rate`, `heart_rate`, `temp`, CASE
-WHEN (((EXTRACT(day FROM `dod`) - EXTRACT(day FROM `admittime`)) IS NULL)) THEN (FALSE)
-WHEN ((EXTRACT(day FROM `dod`) - EXTRACT(day FROM `admittime`) &gt; 30.0)) THEN (FALSE)
-WHEN ((EXTRACT(day FROM `dod`) - EXTRACT(day FROM `admittime`) &lt;= 30.0)) THEN (TRUE)
+WHEN (((EXTRACT(second FROM `deathtime`) - EXTRACT(second FROM `admittime`)) IS NULL)) THEN (FALSE)
+WHEN ((EXTRACT(second FROM `deathtime`) - EXTRACT(second FROM `admittime`) &gt; 2592000.0)) THEN (FALSE)
+WHEN ((EXTRACT(second FROM `deathtime`) - EXTRACT(second FROM `admittime`) &lt;= 2592000.0)) THEN (TRUE)
 END AS `thirty_day_mort`
 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `intime`, `LHS`.`hadm_id` AS `hadm_id`, `LHS`.`stay_id` AS `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`, `gender`, `anchor_age`, `anchor_year`, `anchor_year_group`, `dod`, `age_hadm`, `sodium`, `chloride`, `potassium`, `bicarbonate`, `hematocrit`, `creatinine`, `wbc_count`, `glucose`, `bp_systolic`, `bp_mean`, `resp_rate`, `heart_rate`, `temp`
 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`, `gender`, `anchor_age`, `anchor_year`, `anchor_year_group`, `dod`, `age_hadm`, `sodium`, `chloride`, `potassium`, `bicarbonate`, `hematocrit`, `creatinine`, `wbc_count`, `glucose`
@@ -978,7 +978,7 @@ ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`hadm_id` = `RHS`.`hadm_id
  3 FALSE          
  4 FALSE          
  5 FALSE          
- 6 TRUE           
+ 6 FALSE          
  7 FALSE          
  8 FALSE          
  9 FALSE          

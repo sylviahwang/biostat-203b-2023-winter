@@ -196,9 +196,9 @@ icu_cohort <- icustays_tble %>%
   left_join(labevents_tble, by = "subject_id") %>%
   left_join(chartevents_tble, by = c("subject_id", "hadm_id", "stay_id")) %>% 
   mutate(thirty_day_mort = 
-           case_when(is.na(day(dod) - day(admittime)) ~ FALSE, 
-                     (day(dod) - day(admittime) > 30) ~ FALSE, 
-                     (day(dod) - day(admittime) <= 30) ~ TRUE)) %>% 
+           case_when(is.na(second(deathtime) - second(admittime)) ~ FALSE, 
+                     (second(deathtime) - second(admittime) > 2592000) ~ FALSE, 
+                     (second(deathtime) - second(admittime) <= 2592000) ~ TRUE)) %>% 
   show_query() %>% 
   print(width = Inf) %>% 
   collect() %>% 
