@@ -722,27 +722,27 @@ GROUP BY `subject_id`, `hadm_id`, `stay_id`
 <span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>icu_cohort <span class="ot">&lt;-</span> icustays_tble <span class="sc">%&gt;%</span> </span>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>icu_cohort <span class="ot">&lt;-</span> icustays_tble <span class="sc">%&gt;%</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(admissions_tble, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"subject_id"</span>, <span class="st">"hadm_id"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(patients_tble, <span class="at">by =</span> <span class="st">"subject_id"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(patients_tble, <span class="at">by =</span> <span class="st">"subject_id"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">age_hadm =</span> anchor_age <span class="sc">+</span> <span class="fu">year</span>(admittime) <span class="sc">-</span> anchor_year) <span class="sc">%&gt;%</span></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(age_hadm <span class="sc">&gt;=</span> <span class="dv">18</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(age_hadm <span class="sc">&gt;=</span> <span class="dv">18</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(labevents_tble, <span class="at">by =</span> <span class="st">"subject_id"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(chartevents_tble, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"subject_id"</span>, <span class="st">"hadm_id"</span>, <span class="st">"stay_id"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">thirty_day_mort =</span> </span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">case_when</span>(<span class="fu">is.na</span>(<span class="fu">second</span>(deathtime) <span class="sc">-</span> <span class="fu">second</span>(admittime)) <span class="sc">~</span> <span class="cn">FALSE</span>, </span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>                     (<span class="fu">second</span>(deathtime) <span class="sc">-</span> <span class="fu">second</span>(admittime) <span class="sc">&gt;</span> <span class="dv">2592000</span>) <span class="sc">~</span> <span class="cn">FALSE</span>, </span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>                     (<span class="fu">second</span>(deathtime) <span class="sc">-</span> <span class="fu">second</span>(admittime) <span class="sc">&lt;=</span> <span class="dv">2592000</span>) <span class="sc">~</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_query</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(<span class="st">"./mimiciv_shiny/icu_cohort.rds"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(chartevents_tble, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"subject_id"</span>, <span class="st">"hadm_id"</span>, <span class="st">"stay_id"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">thirty_day_mort =</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">case_when</span>(((<span class="fu">second</span>(deathtime) <span class="sc">-</span> <span class="fu">second</span>(admittime)) <span class="sc">&lt;=</span> <span class="dv">2592000</span>) <span class="sc">~</span> <span class="cn">TRUE</span>,</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>                  ((<span class="fu">second</span>(deathtime) <span class="sc">-</span> <span class="fu">second</span>(admittime)) <span class="sc">&gt;</span> <span class="dv">2592000</span>) <span class="sc">~</span> <span class="cn">FALSE</span>,</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">is.na</span>(deathtime) <span class="sc">~</span> <span class="cn">FALSE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_query</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(<span class="st">"./mimiciv_shiny/icu_cohort.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;SQL&gt;
 SELECT `subject_id`, `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`, `gender`, `anchor_age`, `anchor_year`, `anchor_year_group`, `dod`, `age_hadm`, `sodium`, `chloride`, `potassium`, `bicarbonate`, `hematocrit`, `creatinine`, `wbc_count`, `glucose`, `bp_systolic`, `bp_mean`, `resp_rate`, `heart_rate`, `temp`, CASE
-WHEN (((EXTRACT(second FROM `deathtime`) - EXTRACT(second FROM `admittime`)) IS NULL)) THEN (FALSE)
-WHEN ((EXTRACT(second FROM `deathtime`) - EXTRACT(second FROM `admittime`) &gt; 2592000.0)) THEN (FALSE)
-WHEN ((EXTRACT(second FROM `deathtime`) - EXTRACT(second FROM `admittime`) &lt;= 2592000.0)) THEN (TRUE)
+WHEN (((EXTRACT(second FROM `deathtime`) - EXTRACT(second FROM `admittime`)) &lt;= 2592000.0)) THEN (TRUE)
+WHEN (((EXTRACT(second FROM `deathtime`) - EXTRACT(second FROM `admittime`)) &gt; 2592000.0)) THEN (FALSE)
+WHEN (((`deathtime`) IS NULL)) THEN (FALSE)
 END AS `thirty_day_mort`
 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `intime`, `LHS`.`hadm_id` AS `hadm_id`, `LHS`.`stay_id` AS `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`, `gender`, `anchor_age`, `anchor_year`, `anchor_year_group`, `dod`, `age_hadm`, `sodium`, `chloride`, `potassium`, `bicarbonate`, `hematocrit`, `creatinine`, `wbc_count`, `glucose`, `bp_systolic`, `bp_mean`, `resp_rate`, `heart_rate`, `temp`
 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`, `gender`, `anchor_age`, `anchor_year`, `anchor_year_group`, `dod`, `age_hadm`, `sodium`, `chloride`, `potassium`, `bicarbonate`, `hematocrit`, `creatinine`, `wbc_count`, `glucose`
@@ -986,15 +986,26 @@ ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`hadm_id` = `RHS`.`hadm_id
 # … with more rows</code></pre>
 </div>
 </div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check thirty_day_mort values</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>icu_cohort <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"./mimiciv_shiny/icu_cohort.rds"</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(icu_cohort<span class="sc">$</span>thirty_day_mort)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+FALSE  TRUE 
+47642  5508 </code></pre>
+</div>
+</div>
 <p>Close database connection and clear workspace.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="q2.-shiny-app" class="level2" data-number="2">
 <h2 data-number="2" class="anchored" data-anchor-id="q2.-shiny-app"><span class="header-section-number">2</span> Q2. Shiny app</h2>
 <p>Develop a Shiny app for exploring the ICU cohort data created in Q1. The app should reside in the <code>mimiciv_shiny</code> folder. The app should provide easy access to the graphical and numerical summaries of variables (demographics, lab measurements, vitals) in the ICU cohort.</p>
+<p>Q2 is developed in <code>shinyapp.R</code> in the <code>mimiciv_shiny</code> folder.</p>
 </section>
 
 </main>

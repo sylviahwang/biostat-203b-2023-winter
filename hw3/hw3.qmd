@@ -188,21 +188,27 @@ if (!dir.exists("mimiciv_shiny")) {
 ```
 
 ```{r}
-icu_cohort <- icustays_tble %>% 
+icu_cohort <- icustays_tble %>%
   left_join(admissions_tble, by = c("subject_id", "hadm_id")) %>%
-  left_join(patients_tble, by = "subject_id") %>% 
+  left_join(patients_tble, by = "subject_id") %>%
   mutate(age_hadm = anchor_age + year(admittime) - anchor_year) %>%
-  filter(age_hadm >= 18) %>% 
+  filter(age_hadm >= 18) %>%
   left_join(labevents_tble, by = "subject_id") %>%
-  left_join(chartevents_tble, by = c("subject_id", "hadm_id", "stay_id")) %>% 
-  mutate(thirty_day_mort = 
-           case_when(is.na(second(deathtime) - second(admittime)) ~ FALSE, 
-                     (second(deathtime) - second(admittime) > 2592000) ~ FALSE, 
-                     (second(deathtime) - second(admittime) <= 2592000) ~ TRUE)) %>% 
-  show_query() %>% 
-  print(width = Inf) %>% 
-  collect() %>% 
-  saveRDS("./mimiciv_shiny/icu_cohort.rds") 
+  left_join(chartevents_tble, by = c("subject_id", "hadm_id", "stay_id")) %>%
+  mutate(thirty_day_mort =
+        case_when(((second(deathtime) - second(admittime)) <= 2592000) ~ TRUE,
+                  ((second(deathtime) - second(admittime)) > 2592000) ~ FALSE,
+                  is.na(deathtime) ~ FALSE)) %>%
+  show_query() %>%
+  print(width = Inf) %>%
+  collect() %>%
+  saveRDS("./mimiciv_shiny/icu_cohort.rds")
+```
+
+```{r}
+# Check thirty_day_mort values
+icu_cohort <- readRDS("./mimiciv_shiny/icu_cohort.rds")
+table(icu_cohort$thirty_day_mort)
 ```
 
 Close database connection and clear workspace.
@@ -215,3 +221,4 @@ rm(list = ls())
 
 Develop a Shiny app for exploring the ICU cohort data created in Q1. The app should reside in the `mimiciv_shiny` folder. The app should provide easy access to the graphical and numerical summaries of variables (demographics, lab measurements, vitals) in the ICU cohort.
 
+Q2 is developed in `shinyapp.R` in the `mimiciv_shiny` folder.
