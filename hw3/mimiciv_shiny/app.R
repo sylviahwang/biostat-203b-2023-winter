@@ -8,7 +8,7 @@ sessionInfo()
 library(shiny)
 library(tidyverse)
 
-icu_cohort <- readRDS("./mimiciv_shiny/icu_cohort.rds")
+icu_cohort <- readRDS("./hw3/mimiciv_shiny/icu_cohort.rds")
 table(icu_cohort$thirty_day_mort)
 
 #UI
@@ -105,38 +105,38 @@ ui <- fluidPage(
 server <- function(input, output) {
   output$demotable <- renderTable({
     x <- switch(input$demo,
-                Gender          = icu_cohort %>% count(gender),
-                "Anchor age"      = summarise(icu_cohort, 
+                Gender                 = icu_cohort %>% count(gender),
+                "Anchor age"           = summarise(icu_cohort, 
                                             mean = mean(anchor_age),
                                             median = median(anchor_age),
                                             sd = sd(anchor_age),
                                             min = min(anchor_age),
                                             max = max(anchor_age)),
-                "Age at admission"        = summarise(icu_cohort, 
+                "Age at admission"     = summarise(icu_cohort, 
                                             mean = mean(age_hadm),
                                             median = median(age_hadm),
                                             sd = sd(age_hadm),
                                             min = min(age_hadm),
                                             max = max(age_hadm)),
-                Ethnicity       = icu_cohort %>% count(ethnicity),
-                Language        = icu_cohort %>% count(language),
-                Insurance       = icu_cohort %>% count(insurance),
-                "Marital status"  = icu_cohort %>% count(marital_status),
-                "Admission type"  = icu_cohort %>% count(admission_type),
+                Ethnicity              = icu_cohort %>% count(ethnicity),
+                Language               = icu_cohort %>% count(language),
+                Insurance              = icu_cohort %>% count(insurance),
+                "Marital status"       = icu_cohort %>% count(marital_status),
+                "Admission type"       = icu_cohort %>% count(admission_type),
                 "Thirty-day mortality" = icu_cohort %>% count(thirty_day_mort))
     x
   })
   
   output$demoPlot <- renderPlot({
     x <- switch(input$demo,
-                Gender          = icu_cohort$gender,
-                "Anchor age"      = icu_cohort$anchor_age,
-                "Age at admission"        = icu_cohort$age_hadm,
-                Ethnicity       = icu_cohort$ethnicity,
-                Language        = icu_cohort$language,
-                Insurance       = icu_cohort$insurance,
-                "Marital status"  = icu_cohort$marital_status,
-                "Admission type"  = icu_cohort$admission_type,
+                Gender                 = icu_cohort$gender,
+                "Anchor age"           = icu_cohort$anchor_age,
+                "Age at admission"     = icu_cohort$age_hadm,
+                Ethnicity              = icu_cohort$ethnicity,
+                Language               = icu_cohort$language,
+                Insurance              = icu_cohort$insurance,
+                "Marital status"       = icu_cohort$marital_status,
+                "Admission type"       = icu_cohort$admission_type,
                 "Thirty-day mortality" = icu_cohort$thirty_day_mort)
     
     if (input$demo %in% c("Anchor age", "Age at admission")) {
@@ -163,13 +163,13 @@ server <- function(input, output) {
   
   labInput <- reactive({
     switch(input$labvar,
-           Bicarbonate = icu_cohort$bicarbonate,
-           Chloride = icu_cohort$chloride,
-           Creatinine = icu_cohort$creatinine,
-           Glucose = icu_cohort$glucose,
-           Hematocrit = icu_cohort$hematocrit,
-           Potassium = icu_cohort$potassium,
-           Sodium = icu_cohort$sodium,
+           Bicarbonate        = icu_cohort$bicarbonate,
+           Chloride           = icu_cohort$chloride,
+           Creatinine         = icu_cohort$creatinine,
+           Glucose            = icu_cohort$glucose,
+           Hematocrit         = icu_cohort$hematocrit,
+           Potassium          = icu_cohort$potassium,
+           Sodium             = icu_cohort$sodium,
            "White blood cell" = icu_cohort$wbc_count)
   })
   
@@ -184,13 +184,13 @@ server <- function(input, output) {
   
   output$labplot <- renderPlot({
     x <- switch(input$labvar,
-                Bicarbonate = icu_cohort$bicarbonate,
-                Chloride = icu_cohort$chloride,
-                Creatinine = icu_cohort$creatinine,
-                Glucose = icu_cohort$glucose,
-                Hematocrit = icu_cohort$hematocrit,
-                Potassium = icu_cohort$potassium,
-                Sodium = icu_cohort$sodium,
+                Bicarbonate        = icu_cohort$bicarbonate,
+                Chloride           = icu_cohort$chloride,
+                Creatinine         = icu_cohort$creatinine,
+                Glucose            = icu_cohort$glucose,
+                Hematocrit         = icu_cohort$hematocrit,
+                Potassium          = icu_cohort$potassium,
+                Sodium             = icu_cohort$sodium,
                 "White blood cell" = icu_cohort$wbc_count)
     x <- na.omit(x)
     
@@ -203,10 +203,10 @@ server <- function(input, output) {
   vitalInput <- reactive({
     switch(input$vitalvar,
            "Non Invasive Blood Pressure systolic" = icu_cohort$bp_systolic,
-           "Non Invasive Blood Pressure mean" = icu_cohort$bp_mean,
-           "Respiratory Rate" = icu_cohort$resp_rate,
-           "Heart Rate"   = icu_cohort$heart_rate,
-           "Temperature Fahrenheit" = icu_cohort$temp) 
+           "Non Invasive Blood Pressure mean"     = icu_cohort$bp_mean,
+           "Respiratory Rate"                     = icu_cohort$resp_rate,
+           "Heart Rate"                           = icu_cohort$heart_rate,
+           "Temperature Fahrenheit"               = icu_cohort$temp) 
   })
   
   output$vitalsummary <- renderPrint({
@@ -222,10 +222,10 @@ server <- function(input, output) {
   output$vitalplot <- renderPlot({
     x <- switch(input$vitalvar,
                 "Non Invasive Blood Pressure systolic" = icu_cohort$bp_systolic,
-                "Non Invasive Blood Pressure mean" = icu_cohort$bp_mean,
-                "Respiratory Rate" = icu_cohort$resp_rate,
-                "Heart Rate"   = icu_cohort$heart_rate,
-                "Temperature Fahrenheit" = icu_cohort$temp) 
+                "Non Invasive Blood Pressure mean"     = icu_cohort$bp_mean,
+                "Respiratory Rate"                     = icu_cohort$resp_rate,
+                "Heart Rate"                           = icu_cohort$heart_rate,
+                "Temperature Fahrenheit"               = icu_cohort$temp) 
     x <- na.omit(x)
     x <- subset(x, x >= 0)
     
@@ -239,8 +239,3 @@ server <- function(input, output) {
 
 #Launch the app
 shinyApp(ui, server)
-
-
-
-
-
