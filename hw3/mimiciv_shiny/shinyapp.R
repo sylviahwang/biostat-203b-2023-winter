@@ -7,6 +7,7 @@ sessionInfo()
 # app.R
 library(shiny)
 library(tidyverse)
+library(dplyr)
 
 icu_cohort <- readRDS("./mimiciv_shiny/icu_cohort.rds")
 table(icu_cohort$thirty_day_mort)
@@ -49,22 +50,22 @@ ui <- fluidPage(
                                          "Creatinine", "Glucose",
                                          "Hematocrit", "Potassium",
                                          "Sodium", "White blood cell")),
-                 numericInput(inputId = "labobs",
-                              label = "Number of observations to view:",
-                              value = 10),
                  sliderInput(inputId = "labbins",
                              label = "Number of bins:",
                              min = 1,
                              max = 50,
-                             value = 30)
+                             value = 30),
+                 numericInput(inputId = "labobs",
+                              label = "Number of observations to view:",
+                              value = 10)
                ),
                mainPanel(
-                 helpText("Summary statistics"),
+                 helpText("Summary statistics:"),
                  verbatimTextOutput("labsummary"),
-                 helpText("Data preview:"),
-                 tableOutput("labview"),
                  helpText("Histogram:"),
-                 plotOutput(outputId = "labplot")
+                 plotOutput(outputId = "labplot"),
+                 helpText("Data preview:"),
+                 tableOutput("labview")
                )
              )
     ),
@@ -79,12 +80,21 @@ ui <- fluidPage(
                                          "Non Invasive Blood Pressure mean", 
                                          "Respiratory Rate",
                                          "Temperature Fahrenheit")),
+                 sliderInput(inputId = "vitalbins",
+                             label = "Number of bins:",
+                             min = 1,
+                             max = 50,
+                             value = 30),
                  numericInput(inputId = "vitalobs",
                               label = "Number of observations to view:",
                               value = 10)
                ),
                mainPanel(
+                 helpText("Summary statistics:"),
                  verbatimTextOutput("vitalsummary"),
+                 helpText("Histogram:"),
+                 plotOutput(outputId = "vitalplot"),
+                 helpText("Data preview:"),
                  tableOutput("vitalview")
                )
              )
@@ -197,16 +207,33 @@ server <- function(input, output) {
            "Non Invasive Blood Pressure mean" = icu_cohort$bp_mean,
            "Respiratory Rate" = icu_cohort$resp_rate,
            "Heart Rate"   = icu_cohort$heart_rate,
-           "Temperature Fahrenheit" = icu_cohort$temp)
+           "Temperature Fahrenheit" = icu_cohort$temp) 
   })
   
   output$vitalsummary <- renderPrint({
     vitalvar <- vitalInput()
+    vitalvar <- vitalvar[vitalvar >= 0]
     summary(vitalvar[!is.na(vitalvar)])
   })
   
   output$vitalview <- renderTable({
     head(vitalInput(), n = input$vitalobs)
+  })
+  
+  output$vitalplot <- renderPlot({
+    x <- switch(input$vitalvar,
+                "Non Invasive Blood Pressure systolic" = icu_cohort$bp_systolic,
+                "Non Invasive Blood Pressure mean" = icu_cohort$bp_mean,
+                "Respiratory Rate" = icu_cohort$resp_rate,
+                "Heart Rate"   = icu_cohort$heart_rate,
+                "Temperature Fahrenheit" = icu_cohort$temp) 
+    x <- na.omit(x)
+    x <- subset(x, x >= 0)
+    
+    vitalbins <- seq(min(x), max(x), length.out = input$vitalbins + 1)
+    hist(x, breaks = vitalbins, col = "#106e82", border = "white",
+         xlab = input$vitalvar,
+         main = paste("Histogram of", input$vitalvar))
   })
   
 }
