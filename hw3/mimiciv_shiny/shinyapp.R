@@ -19,7 +19,7 @@ ui <- fluidPage(
              sidebarLayout(
                sidebarPanel(
                  selectInput("demo",
-                             label = "demo",
+                             label = "Demographics:",
                              choices = c("gender", "anchor_age",
                                          "age_hadm", "ethnicity",
                                          "language", "insurance",
@@ -40,31 +40,45 @@ ui <- fluidPage(
              )
     ),
     
-    # tabPanel("Lab measurements",
-    #          fluidRow(
-    #            column(width = 6,
-    #                   h3("Summary Statistics"),
-    #                   verbatimTextOutput("summary")
-    #            ),
-    #            column(width = 6,
-    #                   h3("Boxplot"),
-    #                   plotOutput("boxplot")
-    #            )
-    #          )
-    # ),
-    # 
-    # tabPanel("Vitals",
-    #          fluidRow(
-    #            column(width = 6,
-    #                   h3("Summary Statistics"),
-    #                   verbatimTextOutput("summary")
-    #            ),
-    #            column(width = 6,
-    #                   h3("Boxplot"),
-    #                   plotOutput("boxplot")
-    #            )
-    #          )
-    # )
+    tabPanel("Lab measurements",
+             sidebarLayout(
+               sidebarPanel(
+                 selectInput("labvar",
+                             label = "Lab measurements:",
+                             choices = c("bicarbonate", "chloride",
+                                         "creatinine", "glucose",
+                                         "hematocrit", "potassium",
+                                         "sodium", "wbc_count")),
+                 numericInput(inputId = "labobs",
+                              label = "Number of observations to view:",
+                              value = 10)
+               ),
+               mainPanel(
+                 verbatimTextOutput("labsummary"),
+                 tableOutput("labview")
+               )
+             )
+    ),
+
+    tabPanel("Vitals",
+             sidebarLayout(
+               sidebarPanel(
+                 selectInput("labvar",
+                             label = "Lab measurements:",
+                             choices = c("bicarbonate", "chloride",
+                                         "creatinine", "glucose",
+                                         "hematocrit", "potassium",
+                                         "sodium", "wbc_count")),
+                 numericInput(inputId = "labobs",
+                              label = "Number of observations to view:",
+                              value = 10)
+               ),
+               mainPanel(
+                 verbatimTextOutput("labsummary"),
+                 tableOutput("labview")
+               )
+             )
+    )
   )
 )
 
@@ -127,6 +141,28 @@ server <- function(input, output) {
               main = paste("Bar plot of", input$demo))
     }
   })
+  
+  datasetInput <- reactive({
+    switch(input$labvar,
+           bicarbonate = icu_cohort$bicarbonate,
+           chloride = icu_cohort$chloride,
+           creatinine = icu_cohort$creatinine,
+           glucose = icu_cohort$glucose,
+           hematocrit = icu_cohort$hematocrit,
+           potassium = icu_cohort$potassium,
+           sodium = icu_cohort$sodium,
+           wbc_count = icu_cohort$wbc_count)
+  })
+  
+  output$labsummary <- renderPrint({
+    labvar <- datasetInput()
+    summary(labvar)
+  })
+  
+  output$labview <- renderTable({
+    head(datasetInput(), n = input$labobs)
+  })
+  
 }
 
 #Launch the app
