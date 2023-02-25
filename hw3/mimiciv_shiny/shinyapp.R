@@ -34,7 +34,7 @@ ui <- fluidPage(
                mainPanel(
                  helpText("Summary statistics:"),
                  tableOutput("demotable"),
-                 helpText("Histograms:"),
+                 helpText("Histogram:"),
                  plotOutput(outputId = "demoPlot")
                )
              )
@@ -45,17 +45,26 @@ ui <- fluidPage(
                sidebarPanel(
                  selectInput("labvar",
                              label = "Lab measurements:",
-                             choices = c("bicarbonate", "chloride",
-                                         "creatinine", "glucose",
-                                         "hematocrit", "potassium",
-                                         "sodium", "wbc_count")),
+                             choices = c("Bicarbonate", "Chloride",
+                                         "Creatinine", "Glucose",
+                                         "Hematocrit", "Potassium",
+                                         "Sodium", "White blood cell")),
                  numericInput(inputId = "labobs",
                               label = "Number of observations to view:",
-                              value = 10)
+                              value = 10),
+                 sliderInput(inputId = "labbins",
+                             label = "Number of bins:",
+                             min = 1,
+                             max = 50,
+                             value = 30)
                ),
                mainPanel(
+                 helpText("Summary statistics"),
                  verbatimTextOutput("labsummary"),
-                 tableOutput("labview")
+                 helpText("Data preview:"),
+                 tableOutput("labview"),
+                 helpText("Histogram:"),
+                 plotOutput(outputId = "labplot")
                )
              )
     ),
@@ -63,19 +72,20 @@ ui <- fluidPage(
     tabPanel("Vitals",
              sidebarLayout(
                sidebarPanel(
-                 selectInput("labvar",
-                             label = "Lab measurements:",
-                             choices = c("bicarbonate", "chloride",
-                                         "creatinine", "glucose",
-                                         "hematocrit", "potassium",
-                                         "sodium", "wbc_count")),
-                 numericInput(inputId = "labobs",
+                 selectInput("vitalvar",
+                             label = "Vitals:",
+                             choices = c("Heart Rate", 
+                                         "Non Invasive Blood Pressure systolic",
+                                         "Non Invasive Blood Pressure mean", 
+                                         "Respiratory Rate",
+                                         "Temperature Fahrenheit")),
+                 numericInput(inputId = "vitalobs",
                               label = "Number of observations to view:",
                               value = 10)
                ),
                mainPanel(
-                 verbatimTextOutput("labsummary"),
-                 tableOutput("labview")
+                 verbatimTextOutput("vitalsummary"),
+                 tableOutput("vitalview")
                )
              )
     )
@@ -142,25 +152,61 @@ server <- function(input, output) {
     }
   })
   
-  datasetInput <- reactive({
+  labInput <- reactive({
     switch(input$labvar,
-           bicarbonate = icu_cohort$bicarbonate,
-           chloride = icu_cohort$chloride,
-           creatinine = icu_cohort$creatinine,
-           glucose = icu_cohort$glucose,
-           hematocrit = icu_cohort$hematocrit,
-           potassium = icu_cohort$potassium,
-           sodium = icu_cohort$sodium,
-           wbc_count = icu_cohort$wbc_count)
+           Bicarbonate = icu_cohort$bicarbonate,
+           Chloride = icu_cohort$chloride,
+           Creatinine = icu_cohort$creatinine,
+           Glucose = icu_cohort$glucose,
+           Hematocrit = icu_cohort$hematocrit,
+           Potassium = icu_cohort$potassium,
+           Sodium = icu_cohort$sodium,
+           "White blood cell" = icu_cohort$wbc_count)
   })
   
   output$labsummary <- renderPrint({
-    labvar <- datasetInput()
-    summary(labvar)
+    labvar <- labInput()
+    summary(labvar[!is.na(labvar)])
   })
   
   output$labview <- renderTable({
-    head(datasetInput(), n = input$labobs)
+    head(labInput(), n = input$labobs)
+  })
+  
+  output$labplot <- renderPlot({
+    x <- switch(input$labvar,
+                Bicarbonate = icu_cohort$bicarbonate,
+                Chloride = icu_cohort$chloride,
+                Creatinine = icu_cohort$creatinine,
+                Glucose = icu_cohort$glucose,
+                Hematocrit = icu_cohort$hematocrit,
+                Potassium = icu_cohort$potassium,
+                Sodium = icu_cohort$sodium,
+                "White blood cell" = icu_cohort$wbc_count)
+    x <- na.omit(x)
+    
+    labbins <- seq(min(x), max(x), length.out = input$labbins + 1)
+    hist(x, breaks = labbins, col = "#106e82", border = "white",
+         xlab = input$labvar,
+         main = paste("Histogram of", input$labvar))
+  })
+  
+  vitalInput <- reactive({
+    switch(input$vitalvar,
+           "Non Invasive Blood Pressure systolic" = icu_cohort$bp_systolic,
+           "Non Invasive Blood Pressure mean" = icu_cohort$bp_mean,
+           "Respiratory Rate" = icu_cohort$resp_rate,
+           "Heart Rate"   = icu_cohort$heart_rate,
+           "Temperature Fahrenheit" = icu_cohort$temp)
+  })
+  
+  output$vitalsummary <- renderPrint({
+    vitalvar <- vitalInput()
+    summary(vitalvar[!is.na(vitalvar)])
+  })
+  
+  output$vitalview <- renderTable({
+    head(vitalInput(), n = input$vitalobs)
   })
   
 }
