@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.313">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sylvia Wang 105118268">
+
+<title>Biostat 203B Homework 3</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="hw3_files/libs/clipboard/clipboard.min.js"></script>
+<script src="hw3_files/libs/quarto-html/quarto.js"></script>
+<script src="hw3_files/libs/quarto-html/popper.min.js"></script>
+<script src="hw3_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="hw3_files/libs/quarto-html/anchor.min.js"></script>
+<link href="hw3_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="hw3_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="hw3_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="hw3_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="hw3_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#q1.-compile-the-icu-cohort-in-hw2-from-the-google-bigquery-database" id="toc-q1.-compile-the-icu-cohort-in-hw2-from-the-google-bigquery-database" class="nav-link active" data-scroll-target="#q1.-compile-the-icu-cohort-in-hw2-from-the-google-bigquery-database"><span class="toc-section-number">1</span>  Q1. Compile the ICU cohort in HW2 from the Google BigQuery database</a></li>
+  <li><a href="#q2.-shiny-app" id="toc-q2.-shiny-app" class="nav-link" data-scroll-target="#q2.-shiny-app"><span class="toc-section-number">2</span>  Q2. Shiny app</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Biostat 203B Homework 3</h1>
+<p class="subtitle lead">Due Mar 1 @ 11:59PM</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sylvia Wang 105118268 </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Display machine information:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.2.2 (2022-10-31)
+Platform: x86_64-apple-darwin17.0 (64-bit)
+Running under: macOS Big Sur ... 10.16
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+loaded via a namespace (and not attached):
+ [1] digest_0.6.29     lifecycle_1.0.3   jsonlite_1.8.4    magrittr_2.0.3   
+ [5] evaluate_0.16     rlang_1.0.6       stringi_1.7.8     cli_3.6.0        
+ [9] rstudioapi_0.14   vctrs_0.5.2       rmarkdown_2.16    tools_4.2.2      
+[13] stringr_1.5.0     glue_1.6.2        htmlwidgets_1.5.4 xfun_0.32        
+[17] yaml_2.3.5        fastmap_1.1.0     compiler_4.2.2    htmltools_0.5.3  
+[21] knitr_1.40       </code></pre>
+</div>
+</div>
+<p>Load database libraries and the tidyverse frontend:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bigrquery)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dbplyr)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DBI)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>I found the current versions of bigrquery (v1.4.1) and dbplyr (v2.3.0) don’t work well together on my computer (<a href="https://github.com/r-dbi/bigrquery/issues/509">Issue</a>). If you encounter similar issues, you can install older versions of the these two packages.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># library(devtools)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># install_version("bigrquery", version = "1.4.0")</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># install_version("dbplyr", version = "2.1.1")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="q1.-compile-the-icu-cohort-in-hw2-from-the-google-bigquery-database" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="q1.-compile-the-icu-cohort-in-hw2-from-the-google-bigquery-database"><span class="header-section-number">1</span> Q1. Compile the ICU cohort in HW2 from the Google BigQuery database</h2>
+<p>Below is an outline of steps.</p>
+<ol type="1">
+<li>Load the GCP BigQuery service account token. Please place the service account token (available at BruinLearn) at your MIMIC data folder: <code>~/mimic/biostat-203b-2022winter-3fdc2392ac39.json</code>.</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># path to the service account token </span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>satoken <span class="ot">&lt;-</span> <span class="st">"~/mimic/biostat-203b-2023winter-3fdc2392ac39.json"</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># BigQuery authentication using service account</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">bq_auth</span>(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> satoken,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># email = "mimiciv-bigquery@biostat-203b-2023winter.iam.gserviceaccount.com",</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># scopes = c("https://www.googleapis.com/auth/bigquery",</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#   "https://www.googleapis.com/auth/cloud-platform")</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol type="1">
+<li>Connect to BigQuery database <code>mimic4_v1_0_203b</code> in GCP (Google Cloud Platform), using the billing account <code>biostat-203b-2022winter</code>.</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Connect to the BigQuery database `biostat-203b-2022winter.mimic4_v1_0_203b`</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    bigrquery<span class="sc">::</span><span class="fu">bigquery</span>(),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">project =</span> <span class="st">"biostat-203b-2022winter"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">dataset =</span> <span class="st">"mimic4_v1_0_203b"</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">billing =</span> <span class="st">"biostat-203b-2022winter"</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>con</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;BigQueryConnection&gt;
+  Dataset: biostat-203b-2022winter.mimic4_v1_0_203b
+  Billing: biostat-203b-2022winter</code></pre>
+</div>
+</div>
+<ol start="2" type="1">
+<li>List all tables in the <code>mimic4_v1_0_203b</code> database.</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbListTables</span>(con)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "admissions"  "chartevents" "d_items"     "d_labitems"  "icustays"   
+[6] "labevents"   "patients"   </code></pre>
+</div>
+</div>
+<ol start="3" type="1">
+<li>Connect to the <code>icustays</code> table.</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># full ICU stays table</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>icustays_tble <span class="ot">&lt;-</span> <span class="fu">tbl</span>(con, <span class="st">"icustays"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_query</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;SQL&gt;
+SELECT *
+FROM `icustays`
+# Source:   table&lt;icustays&gt; [?? x 8]
+# Database: BigQueryConnection
+   subject_id  hadm_id  stay_id first_careunit last_careunit 
+        &lt;int&gt;    &lt;int&gt;    &lt;int&gt; &lt;chr&gt;          &lt;chr&gt;         
+ 1   12776735 20817525 34547665 Neuro Stepdown Neuro Stepdown
+ 2   16256226 20013290 39289362 Neuro Stepdown Neuro Stepdown
+ 3   12974563 29618057 32563675 Neuro Stepdown Neuro Stepdown
+ 4   14609218 20606189 34947848 Neuro Stepdown Neuro Stepdown
+ 5   12687112 26132667 37445058 Neuro Stepdown Neuro Stepdown
+ 6   18190935 24712081 30056748 Neuro Stepdown Neuro Stepdown
+ 7   10404210 22880512 30254828 Neuro Stepdown Neuro Stepdown
+ 8   12552973 21320643 30261549 Neuro Stepdown Neuro Stepdown
+ 9   14303051 26559537 30401486 Neuro Stepdown Neuro Stepdown
+10   12347959 22779073 30503984 Neuro Stepdown Neuro Stepdown
+   intime              outtime               los
+   &lt;dttm&gt;              &lt;dttm&gt;              &lt;dbl&gt;
+ 1 2200-07-12 00:33:00 2200-07-13 16:44:40 1.67 
+ 2 2150-12-20 16:09:08 2150-12-21 14:58:40 0.951
+ 3 2138-11-13 23:30:01 2138-11-15 16:25:19 1.71 
+ 4 2174-06-28 21:13:00 2174-07-05 17:01:32 6.83 
+ 5 2162-05-31 18:08:45 2162-06-04 10:16:13 3.67 
+ 6 2115-12-08 09:39:45 2115-12-12 02:36:52 3.71 
+ 7 2161-03-03 18:30:00 2161-03-05 18:10:31 1.99 
+ 8 2135-09-21 18:12:03 2135-09-23 12:56:46 1.78 
+ 9 2175-11-20 01:02:00 2175-11-21 16:06:17 1.63 
+10 2140-07-11 17:54:14 2140-07-19 13:01:05 7.80 
+# … with more rows</code></pre>
+</div>
+</div>
+<p>We only keep the first ICU stay. Following code is kind of a hack, using the <code>summarise_all(min)</code> function. It seems that <code>slice_min()</code>, <code>slice_head()</code>, <code>distinct(, .keep_all = TRUE)</code> don’t work with <code>dbplyr</code>+<code>bigrquery</code> at the moment.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>icustays_tble <span class="ot">&lt;-</span> icustays_tble <span class="sc">%&gt;%</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(subject_id, intime) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(subject_id) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise_all</span>(min) <span class="sc">%&gt;%</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(icustays_tble, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"subject_id"</span>, <span class="st">"intime"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_query</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Missing values are always removed in SQL.
+Use `MIN(x, na.rm = TRUE)` to silence this warning
+This warning is displayed only once per session.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;SQL&gt;
+SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+
+# Source:   lazy query [?? x 8]
+# Database: BigQueryConnection
+   subject_id intime               hadm_id  stay_id first_careunit
+        &lt;int&gt; &lt;dttm&gt;                 &lt;int&gt;    &lt;int&gt; &lt;chr&gt;         
+ 1   12776735 2200-07-12 00:33:00 20817525 34547665 Neuro Stepdown
+ 2   16256226 2150-12-20 16:09:08 20013290 39289362 Neuro Stepdown
+ 3   12974563 2138-11-13 23:30:01 29618057 32563675 Neuro Stepdown
+ 4   14609218 2174-06-28 21:13:00 20606189 34947848 Neuro Stepdown
+ 5   12687112 2162-05-31 18:08:45 26132667 37445058 Neuro Stepdown
+ 6   18190935 2115-11-12 23:23:32 21137829 34338402 Neuro Stepdown
+ 7   10404210 2161-03-03 18:30:00 22880512 30254828 Neuro Stepdown
+ 8   12552973 2135-09-21 18:12:03 21320643 30261549 Neuro Stepdown
+ 9   14303051 2175-11-20 01:02:00 26559537 30401486 Neuro Stepdown
+10   12347959 2140-07-11 17:54:14 22779073 30503984 Neuro Stepdown
+   last_careunit  outtime               los
+   &lt;chr&gt;          &lt;dttm&gt;              &lt;dbl&gt;
+ 1 Neuro Stepdown 2200-07-13 16:44:40 1.67 
+ 2 Neuro Stepdown 2150-12-21 14:58:40 0.951
+ 3 Neuro Stepdown 2138-11-15 16:25:19 1.71 
+ 4 Neuro Stepdown 2174-07-05 17:01:32 6.83 
+ 5 Neuro Stepdown 2162-06-04 10:16:13 3.67 
+ 6 Neuro Stepdown 2115-11-15 18:06:26 2.78 
+ 7 Neuro Stepdown 2161-03-05 18:10:31 1.99 
+ 8 Neuro Stepdown 2135-09-23 12:56:46 1.78 
+ 9 Neuro Stepdown 2175-11-21 16:06:17 1.63 
+10 Neuro Stepdown 2140-07-19 13:01:05 7.80 
+# … with more rows</code></pre>
+</div>
+</div>
+<ol start="4" type="1">
+<li>Connect to the <code>admissions</code> table and only keep the patients who have a match in <code>icustays_tble</code> (according to <code>subject_id</code> and <code>hadm_id</code>).</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>admissions_tble <span class="ot">&lt;-</span> <span class="fu">tbl</span>(con, <span class="st">"admissions"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">semi_join</span>(icustays_tble, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"subject_id"</span>, <span class="st">"hadm_id"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_query</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;SQL&gt;
+SELECT * FROM `admissions` AS `LHS`
+WHERE EXISTS (
+  SELECT 1 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `RHS`
+  WHERE (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`hadm_id` = `RHS`.`hadm_id`)
+)
+# Source:   lazy query [?? x 15]
+# Database: BigQueryConnection
+   subject_id  hadm_id admittime           dischtime          
+        &lt;int&gt;    &lt;int&gt; &lt;dttm&gt;              &lt;dttm&gt;             
+ 1   14755447 21231460 2172-04-02 14:27:00 2172-04-07 15:45:00
+ 2   11735007 28683663 2150-04-07 15:02:00 2150-05-01 16:54:00
+ 3   12009419 23051475 2120-11-02 19:45:00 2120-11-03 17:56:00
+ 4   14612313 28633110 2163-12-16 13:58:00 2163-12-17 17:21:00
+ 5   18767945 21627074 2172-03-10 05:45:00 2172-03-14 16:50:00
+ 6   12849027 21102653 2181-06-16 16:12:00 2181-06-19 16:56:00
+ 7   13328603 24501897 2122-02-11 02:58:00 2122-02-17 17:19:00
+ 8   16465056 23900843 2176-02-27 20:49:00 2176-03-15 15:20:00
+ 9   17715294 28399871 2131-07-19 21:38:00 2131-08-01 00:00:00
+10   13038181 20933231 2147-01-20 17:48:00 2147-02-12 15:18:00
+   deathtime           admission_type admission_location                    
+   &lt;dttm&gt;              &lt;chr&gt;          &lt;chr&gt;                                 
+ 1 NA                  URGENT         TRANSFER FROM HOSPITAL                
+ 2 NA                  URGENT         TRANSFER FROM HOSPITAL                
+ 3 NA                  URGENT         TRANSFER FROM HOSPITAL                
+ 4 NA                  URGENT         TRANSFER FROM HOSPITAL                
+ 5 NA                  URGENT         TRANSFER FROM SKILLED NURSING FACILITY
+ 6 2181-06-19 16:56:00 URGENT         TRANSFER FROM HOSPITAL                
+ 7 NA                  URGENT         TRANSFER FROM HOSPITAL                
+ 8 NA                  URGENT         TRANSFER FROM HOSPITAL                
+ 9 2131-08-01 20:52:00 URGENT         TRANSFER FROM HOSPITAL                
+10 NA                  URGENT         TRANSFER FROM HOSPITAL                
+   discharge_location       insurance language marital_status ethnicity
+   &lt;chr&gt;                    &lt;chr&gt;     &lt;chr&gt;    &lt;chr&gt;          &lt;chr&gt;    
+ 1 SKILLED NURSING FACILITY Medicare  ?        &lt;NA&gt;           UNKNOWN  
+ 2 SKILLED NURSING FACILITY Other     ?        &lt;NA&gt;           UNKNOWN  
+ 3 HEALTHCARE FACILITY      Medicare  ENGLISH  &lt;NA&gt;           UNKNOWN  
+ 4 HOME                     Other     ?        &lt;NA&gt;           WHITE    
+ 5 SKILLED NURSING FACILITY Medicare  ENGLISH  &lt;NA&gt;           WHITE    
+ 6 DIED                     Other     ENGLISH  &lt;NA&gt;           UNKNOWN  
+ 7 HOME                     Other     ENGLISH  &lt;NA&gt;           UNKNOWN  
+ 8 SKILLED NURSING FACILITY Medicaid  ENGLISH  &lt;NA&gt;           UNKNOWN  
+ 9 DIED                     Other     ENGLISH  &lt;NA&gt;           UNKNOWN  
+10 REHAB                    Other     ENGLISH  &lt;NA&gt;           WHITE    
+   edregtime           edouttime           hospital_expire_flag
+   &lt;dttm&gt;              &lt;dttm&gt;                             &lt;int&gt;
+ 1 NA                  NA                                     0
+ 2 NA                  NA                                     0
+ 3 NA                  NA                                     0
+ 4 NA                  NA                                     0
+ 5 2172-03-09 22:26:00 2172-03-10 08:25:00                    0
+ 6 NA                  NA                                     1
+ 7 NA                  NA                                     0
+ 8 NA                  NA                                     0
+ 9 NA                  NA                                     1
+10 NA                  NA                                     0
+# … with more rows</code></pre>
+</div>
+</div>
+<ol start="5" type="1">
+<li>Connect to the <code>patients</code> table and only keep the patients who have a match in <code>icustays_tble</code> (according to <code>subject_id</code>).</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>patients_tble <span class="ot">&lt;-</span> <span class="fu">tbl</span>(con, <span class="st">"patients"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">semi_join</span>(icustays_tble, <span class="at">by =</span> <span class="st">"subject_id"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_query</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;SQL&gt;
+SELECT * FROM `patients` AS `LHS`
+WHERE EXISTS (
+  SELECT 1 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `RHS`
+  WHERE (`LHS`.`subject_id` = `RHS`.`subject_id`)
+)
+# Source:   lazy query [?? x 6]
+# Database: BigQueryConnection
+   subject_id gender anchor_age anchor_year anchor_year_group dod   
+        &lt;int&gt; &lt;chr&gt;       &lt;int&gt;       &lt;int&gt; &lt;chr&gt;             &lt;date&gt;
+ 1   19137716 F              18        2111 2008 - 2010       NA    
+ 2   19077387 F              18        2112 2017 - 2019       NA    
+ 3   11155072 M              18        2113 2011 - 2013       NA    
+ 4   17945455 F              18        2113 2014 - 2016       NA    
+ 5   17689255 F              18        2113 2017 - 2019       NA    
+ 6   10894885 F              18        2114 2008 - 2010       NA    
+ 7   15175657 M              18        2114 2014 - 2016       NA    
+ 8   17600374 F              18        2118 2014 - 2016       NA    
+ 9   16501289 M              18        2118 2017 - 2019       NA    
+10   10141487 F              18        2119 2017 - 2019       NA    
+# … with more rows</code></pre>
+</div>
+</div>
+<ol start="6" type="1">
+<li>Connect to the <code>labevents</code> table and retrieve a subset that only contain subjects who appear in <code>icustays_tble</code> and the lab items listed in HW2.</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>labevents_tble <span class="ot">&lt;-</span> <span class="fu">tbl</span>(con, <span class="st">"labevents"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(subject_id, itemid, charttime, valuenum) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">semi_join</span>(icustays_tble, <span class="at">by =</span> <span class="st">"subject_id"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(itemid <span class="sc">==</span> <span class="dv">50912</span> <span class="sc">|</span> itemid <span class="sc">==</span> <span class="dv">50971</span> <span class="sc">|</span> </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>           itemid <span class="sc">==</span> <span class="dv">50983</span> <span class="sc">|</span> itemid <span class="sc">==</span> <span class="dv">50902</span> <span class="sc">|</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>           itemid <span class="sc">==</span> <span class="dv">50882</span> <span class="sc">|</span> itemid <span class="sc">==</span> <span class="dv">51221</span> <span class="sc">|</span> </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>           itemid <span class="sc">==</span> <span class="dv">51301</span> <span class="sc">|</span> itemid <span class="sc">==</span> <span class="dv">50931</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_query</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;SQL&gt;
+SELECT *
+FROM (SELECT * FROM (SELECT `subject_id`, `itemid`, `charttime`, `valuenum`
+FROM `labevents`) `LHS`
+WHERE EXISTS (
+  SELECT 1 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `RHS`
+  WHERE (`LHS`.`subject_id` = `RHS`.`subject_id`)
+)) `q01`
+WHERE (`itemid` = 50912.0 OR `itemid` = 50971.0 OR `itemid` = 50983.0 OR `itemid` = 50902.0 OR `itemid` = 50882.0 OR `itemid` = 51221.0 OR `itemid` = 51301.0 OR `itemid` = 50931.0)
+# Source:   lazy query [?? x 4]
+# Database: BigQueryConnection
+   subject_id itemid charttime           valuenum
+        &lt;int&gt;  &lt;int&gt; &lt;dttm&gt;                 &lt;dbl&gt;
+ 1   10020852  51301 2172-03-08 12:15:00      8.4
+ 2   10020852  50882 2177-06-06 16:00:00     25  
+ 3   10035168  50983 2145-04-28 11:10:00    140  
+ 4   10035168  50902 2146-01-03 00:05:00    104  
+ 5   10035631  50983 2112-09-20 04:23:00    139  
+ 6   10035631  50882 2112-11-02 12:10:00     27  
+ 7   10035631  51221 2113-03-08 09:20:00     39.2
+ 8   10035631  50912 2116-02-29 03:23:00      1  
+ 9   10043122  50983 2167-09-17 17:21:00    135  
+10   10046166  51221 2133-08-21 12:40:00     35.7
+# … with more rows</code></pre>
+</div>
+</div>
+<p>Only keep the first lab measurements during ICU stay and pivot lab items to become variables/columns.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>labevents_tble <span class="ot">&lt;-</span> labevents_tble <span class="sc">%&gt;%</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(<span class="fu">select</span>(icustays_tble, subject_id, intime, outtime), </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">by =</span> <span class="st">"subject_id"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(charttime <span class="sc">&gt;=</span> intime <span class="sc">&amp;</span> charttime <span class="sc">&lt;=</span> outtime) <span class="sc">%&gt;%</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(subject_id, itemid) <span class="sc">%&gt;%</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise_all</span>(min) <span class="sc">%&gt;%</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(subject_id, itemid, valuenum) <span class="sc">%&gt;%</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">itemid =</span> <span class="fu">case_when</span>(</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    itemid <span class="sc">==</span> <span class="dv">50882</span> <span class="sc">~</span> <span class="st">"bicarbonate"</span>,</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    itemid <span class="sc">==</span> <span class="dv">50902</span> <span class="sc">~</span> <span class="st">"chloride"</span>,</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    itemid <span class="sc">==</span> <span class="dv">50912</span> <span class="sc">~</span> <span class="st">"creatinine"</span>,</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    itemid <span class="sc">==</span> <span class="dv">50931</span> <span class="sc">~</span> <span class="st">"glucose"</span>,</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    itemid <span class="sc">==</span> <span class="dv">50971</span> <span class="sc">~</span> <span class="st">"potassium"</span>,</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    itemid <span class="sc">==</span> <span class="dv">50983</span> <span class="sc">~</span> <span class="st">"sodium"</span>,</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    itemid <span class="sc">==</span> <span class="dv">51221</span> <span class="sc">~</span> <span class="st">"hematocrit"</span>,</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    itemid <span class="sc">==</span> <span class="dv">51301</span> <span class="sc">~</span> <span class="st">"wbc_count"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> itemid, <span class="at">values_from =</span> valuenum) <span class="sc">%&gt;%</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_query</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;SQL&gt;
+SELECT `subject_id`, MAX(IF(`itemid` = 'sodium', `valuenum`, NULL)) AS `sodium`, MAX(IF(`itemid` = 'chloride', `valuenum`, NULL)) AS `chloride`, MAX(IF(`itemid` = 'potassium', `valuenum`, NULL)) AS `potassium`, MAX(IF(`itemid` = 'bicarbonate', `valuenum`, NULL)) AS `bicarbonate`, MAX(IF(`itemid` = 'hematocrit', `valuenum`, NULL)) AS `hematocrit`, MAX(IF(`itemid` = 'creatinine', `valuenum`, NULL)) AS `creatinine`, MAX(IF(`itemid` = 'wbc_count', `valuenum`, NULL)) AS `wbc_count`, MAX(IF(`itemid` = 'glucose', `valuenum`, NULL)) AS `glucose`
+FROM (SELECT `subject_id`, CASE
+WHEN (`itemid` = 50882.0) THEN ('bicarbonate')
+WHEN (`itemid` = 50902.0) THEN ('chloride')
+WHEN (`itemid` = 50912.0) THEN ('creatinine')
+WHEN (`itemid` = 50931.0) THEN ('glucose')
+WHEN (`itemid` = 50971.0) THEN ('potassium')
+WHEN (`itemid` = 50983.0) THEN ('sodium')
+WHEN (`itemid` = 51221.0) THEN ('hematocrit')
+WHEN (`itemid` = 51301.0) THEN ('wbc_count')
+END AS `itemid`, `valuenum`
+FROM (SELECT `subject_id`, `itemid`, `valuenum`
+FROM (SELECT `subject_id`, `itemid`, MIN(`charttime`) AS `charttime`, MIN(`valuenum`) AS `valuenum`, MIN(`intime`) AS `intime`, MIN(`outtime`) AS `outtime`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `itemid`, `charttime`, `valuenum`, `intime`, `outtime`
+FROM (SELECT *
+FROM (SELECT * FROM (SELECT `subject_id`, `itemid`, `charttime`, `valuenum`
+FROM `labevents`) `LHS`
+WHERE EXISTS (
+  SELECT 1 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `RHS`
+  WHERE (`LHS`.`subject_id` = `RHS`.`subject_id`)
+)) `q01`
+WHERE (`itemid` = 50912.0 OR `itemid` = 50971.0 OR `itemid` = 50983.0 OR `itemid` = 50902.0 OR `itemid` = 50882.0 OR `itemid` = 51221.0 OR `itemid` = 51301.0 OR `itemid` = 50931.0)) `LHS`
+LEFT JOIN (SELECT `subject_id`, `intime`, `outtime`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `q01`) `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id`)
+) `q02`
+WHERE (`charttime` &gt;= `intime` AND `charttime` &lt;= `outtime`)
+GROUP BY `subject_id`, `itemid`) `q03`) `q04`) `q05`
+GROUP BY `subject_id`
+# Source:   lazy query [?? x 9]
+# Database: BigQueryConnection
+   subject_id sodium chloride potassium bicarbonate hematocrit creatinine
+        &lt;int&gt;  &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;
+ 1   10026161    130       96       4.1          15       24.8        1.4
+ 2   10035631    126       86       3.4          16       19.4        1  
+ 3   10041790    136      101       4.1          24       28.6        0.8
+ 4   10051872    137      113       4.2          12       45.9        1.1
+ 5   10135398    125       93       2.9          16       25.1        0.5
+ 6   10199711    128       98       5            19       23.7        0.5
+ 7   10222191    102       86       3            12       16.8        0.7
+ 8   10360766    134      100       3.9          18       36.7        0.7
+ 9   10378217    136      103       4.3          23       30.8        0.6
+10   10431522    139      102       3.8          22       31.7        1.5
+   wbc_count glucose
+       &lt;dbl&gt;   &lt;dbl&gt;
+ 1      10.8     118
+ 2       0.1      96
+ 3       7.1     109
+ 4      16.8      81
+ 5       4.3      80
+ 6      11.6     100
+ 7       7.6      69
+ 8       7.8      73
+ 9      10.1     148
+10       5.3     121
+# … with more rows</code></pre>
+</div>
+</div>
+<ol start="7" type="1">
+<li>Connect to <code>chartevents</code> table and retrieve a subset that only contain subjects who appear in <code>icustays_tble</code> and the chart events listed in HW2.</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>chartevents_tble <span class="ot">&lt;-</span> <span class="fu">tbl</span>(con, <span class="st">"chartevents"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">semi_join</span>(icustays_tble, <span class="at">by =</span> <span class="st">"subject_id"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(itemid <span class="sc">==</span> <span class="dv">220045</span> <span class="sc">|</span> itemid <span class="sc">==</span> <span class="dv">220181</span> <span class="sc">|</span> </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>           itemid <span class="sc">==</span> <span class="dv">220179</span> <span class="sc">|</span> itemid <span class="sc">==</span> <span class="dv">223761</span> <span class="sc">|</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>           itemid <span class="sc">==</span> <span class="dv">220210</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_query</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;SQL&gt;
+SELECT *
+FROM (SELECT * FROM `chartevents` AS `LHS`
+WHERE EXISTS (
+  SELECT 1 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `RHS`
+  WHERE (`LHS`.`subject_id` = `RHS`.`subject_id`)
+)) `q01`
+WHERE (`itemid` = 220045.0 OR `itemid` = 220181.0 OR `itemid` = 220179.0 OR `itemid` = 223761.0 OR `itemid` = 220210.0)
+# Source:   lazy query [?? x 10]
+# Database: BigQueryConnection
+   subject_id  hadm_id  stay_id charttime           storetime           itemid
+        &lt;int&gt;    &lt;int&gt;    &lt;int&gt; &lt;dttm&gt;              &lt;dttm&gt;               &lt;int&gt;
+ 1   10758983 23903395 39274146 2168-09-26 03:20:00 2168-09-26 03:41:00 223761
+ 2   11861017 27162817 36014877 2189-04-08 20:01:00 2189-04-08 20:01:00 223761
+ 3   12265028 22046277 30031418 2156-03-06 20:00:00 2156-03-06 20:41:00 223761
+ 4   14953390 25238765 30602211 2161-05-25 04:00:00 2161-05-25 04:23:00 223761
+ 5   16197194 24842241 34550443 2175-02-18 13:45:00 2175-02-18 13:53:00 223761
+ 6   16278724 20990136 33450337 2122-04-12 16:00:00 2122-04-12 17:19:00 223761
+ 7   19154640 20196064 39656659 2147-01-28 16:00:00 2147-01-28 16:16:00 223761
+ 8   11247761 20447995 31498951 2145-12-27 03:44:00 2145-12-27 03:44:00 223761
+ 9   11327434 23839206 30812642 2152-02-08 01:00:00 2152-02-08 01:07:00 223761
+10   17316725 28444295 35962907 2159-07-16 07:00:00 2159-07-16 07:24:00 223761
+   value valuenum valueuom warning
+   &lt;chr&gt;    &lt;dbl&gt; &lt;chr&gt;      &lt;int&gt;
+ 1 97.8      97.8 °F             0
+ 2 98.3      98.3 °F             0
+ 3 98.1      98.1 °F             0
+ 4 98        98   °F             0
+ 5 98.3      98.3 °F             0
+ 6 98.5      98.5 °F             0
+ 7 99.1      99.1 °F             0
+ 8 98.6      98.6 °F             0
+ 9 98.6      98.6 °F             0
+10 99.9      99.9 °F             0
+# … with more rows</code></pre>
+</div>
+</div>
+<p>Only keep the first chart events during ICU stay and pivot chart events to become variables/columns.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>chartevents_tble <span class="ot">&lt;-</span> chartevents_tble <span class="sc">%&gt;%</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(<span class="fu">select</span>(icustays_tble, subject_id, intime, outtime), </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">by =</span> <span class="st">"subject_id"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(charttime <span class="sc">&gt;=</span> intime <span class="sc">&amp;</span> charttime <span class="sc">&lt;=</span> outtime) <span class="sc">%&gt;%</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(subject_id, itemid) <span class="sc">%&gt;%</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise_all</span>(min) <span class="sc">%&gt;%</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(subject_id, hadm_id, stay_id, itemid, valuenum) <span class="sc">%&gt;%</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">itemid =</span> <span class="fu">case_when</span>(</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    itemid <span class="sc">==</span> <span class="dv">220045</span> <span class="sc">~</span> <span class="st">"heart_rate"</span>,</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    itemid <span class="sc">==</span> <span class="dv">220181</span> <span class="sc">~</span> <span class="st">"bp_mean"</span>,</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>    itemid <span class="sc">==</span> <span class="dv">220179</span> <span class="sc">~</span> <span class="st">"bp_systolic"</span>,</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>    itemid <span class="sc">==</span> <span class="dv">223761</span> <span class="sc">~</span> <span class="st">"temp"</span>,</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>    itemid <span class="sc">==</span> <span class="dv">220210</span> <span class="sc">~</span> <span class="st">"resp_rate"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> itemid, <span class="at">values_from =</span> valuenum) <span class="sc">%&gt;%</span></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_query</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;SQL&gt;
+SELECT `subject_id`, `hadm_id`, `stay_id`, MAX(IF(`itemid` = 'bp_systolic', `valuenum`, NULL)) AS `bp_systolic`, MAX(IF(`itemid` = 'bp_mean', `valuenum`, NULL)) AS `bp_mean`, MAX(IF(`itemid` = 'resp_rate', `valuenum`, NULL)) AS `resp_rate`, MAX(IF(`itemid` = 'heart_rate', `valuenum`, NULL)) AS `heart_rate`, MAX(IF(`itemid` = 'temp', `valuenum`, NULL)) AS `temp`
+FROM (SELECT `subject_id`, `hadm_id`, `stay_id`, CASE
+WHEN (`itemid` = 220045.0) THEN ('heart_rate')
+WHEN (`itemid` = 220181.0) THEN ('bp_mean')
+WHEN (`itemid` = 220179.0) THEN ('bp_systolic')
+WHEN (`itemid` = 223761.0) THEN ('temp')
+WHEN (`itemid` = 220210.0) THEN ('resp_rate')
+END AS `itemid`, `valuenum`
+FROM (SELECT `subject_id`, `hadm_id`, `stay_id`, `itemid`, `valuenum`
+FROM (SELECT `subject_id`, `itemid`, MIN(`hadm_id`) AS `hadm_id`, MIN(`stay_id`) AS `stay_id`, MIN(`charttime`) AS `charttime`, MIN(`storetime`) AS `storetime`, MIN(`value`) AS `value`, MIN(`valuenum`) AS `valuenum`, MIN(`valueuom`) AS `valueuom`, MIN(`warning`) AS `warning`, MIN(`intime`) AS `intime`, MIN(`outtime`) AS `outtime`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `hadm_id`, `stay_id`, `charttime`, `storetime`, `itemid`, `value`, `valuenum`, `valueuom`, `warning`, `intime`, `outtime`
+FROM (SELECT *
+FROM (SELECT * FROM `chartevents` AS `LHS`
+WHERE EXISTS (
+  SELECT 1 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `RHS`
+  WHERE (`LHS`.`subject_id` = `RHS`.`subject_id`)
+)) `q01`
+WHERE (`itemid` = 220045.0 OR `itemid` = 220181.0 OR `itemid` = 220179.0 OR `itemid` = 223761.0 OR `itemid` = 220210.0)) `LHS`
+LEFT JOIN (SELECT `subject_id`, `intime`, `outtime`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `q01`) `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id`)
+) `q02`
+WHERE (`charttime` &gt;= `intime` AND `charttime` &lt;= `outtime`)
+GROUP BY `subject_id`, `itemid`) `q03`) `q04`) `q05`
+GROUP BY `subject_id`, `hadm_id`, `stay_id`
+# Source:   lazy query [?? x 8]
+# Database: BigQueryConnection
+   subject_id  hadm_id  stay_id bp_systolic bp_mean resp_rate heart_rate  temp
+        &lt;int&gt;    &lt;int&gt;    &lt;int&gt;       &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;
+ 1   16169320 28817077 34135739         103      76        10         62  97.3
+ 2   16301937 29589528 32340244          79      60        20         79  97.3
+ 3   12872596 25243398 31435211          92      48         0         57  97.4
+ 4   18166608 21855472 33919176          85      67         6         81  97.7
+ 5   18795212 25191266 38823609         139      89         7         59  96.8
+ 6   18908844 23239859 30444939          97      70        14         58  98.1
+ 7   15064431 28905358 30224506          63      26        12         76  97.5
+ 8   15146755 20961377 35436925          64      42        10         44  97.6
+ 9   10354217 27934121 38056861          78      47         9         73  97  
+10   17416494 27859317 34531454          73      42         6         46  96.2
+# … with more rows</code></pre>
+</div>
+</div>
+<ol start="8" type="1">
+<li>Put things together. This step is similar to Q7 of HW2. Using one chain of pipes <code>%&gt;%</code> to perform following data wrangling steps: (i) start with the <code>icustays_tble</code> for the first ICU stay of each unique patient, (ii) merge in admissions and patients tables, (iii) keep adults only (age at admission &gt;= 18), (iv) merge in the labevents and chartevents tables, (v) create an indicator for 30-day mortality, (vi) save the final tibble to an <code>icu_cohort.rds</code> R data file in the <code>mimiciv_shiny</code> folder.</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make a directory mimiciv_shiny</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">dir.exists</span>(<span class="st">"mimiciv_shiny"</span>)) {</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dir.create</span>(<span class="st">"mimiciv_shiny"</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>icu_cohort <span class="ot">&lt;-</span> icustays_tble <span class="sc">%&gt;%</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(admissions_tble, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"subject_id"</span>, <span class="st">"hadm_id"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(patients_tble, <span class="at">by =</span> <span class="st">"subject_id"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">age_hadm =</span> anchor_age <span class="sc">+</span> <span class="fu">year</span>(admittime) <span class="sc">-</span> anchor_year) <span class="sc">%&gt;%</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(age_hadm <span class="sc">&gt;=</span> <span class="dv">18</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(labevents_tble, <span class="at">by =</span> <span class="st">"subject_id"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(chartevents_tble, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"subject_id"</span>, <span class="st">"hadm_id"</span>, <span class="st">"stay_id"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">thirty_day_mort =</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">case_when</span>(((<span class="fu">second</span>(deathtime) <span class="sc">-</span> <span class="fu">second</span>(admittime)) <span class="sc">&lt;=</span> <span class="dv">2592000</span>) <span class="sc">~</span> <span class="cn">TRUE</span>,</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>                  ((<span class="fu">second</span>(deathtime) <span class="sc">-</span> <span class="fu">second</span>(admittime)) <span class="sc">&gt;</span> <span class="dv">2592000</span>) <span class="sc">~</span> <span class="cn">FALSE</span>,</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">is.na</span>(deathtime) <span class="sc">~</span> <span class="cn">FALSE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_query</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">width =</span> <span class="cn">Inf</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(<span class="st">"./mimiciv_shiny/icu_cohort.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;SQL&gt;
+SELECT `subject_id`, `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`, `gender`, `anchor_age`, `anchor_year`, `anchor_year_group`, `dod`, `age_hadm`, `sodium`, `chloride`, `potassium`, `bicarbonate`, `hematocrit`, `creatinine`, `wbc_count`, `glucose`, `bp_systolic`, `bp_mean`, `resp_rate`, `heart_rate`, `temp`, CASE
+WHEN (((EXTRACT(second FROM `deathtime`) - EXTRACT(second FROM `admittime`)) &lt;= 2592000.0)) THEN (TRUE)
+WHEN (((EXTRACT(second FROM `deathtime`) - EXTRACT(second FROM `admittime`)) &gt; 2592000.0)) THEN (FALSE)
+WHEN (((`deathtime`) IS NULL)) THEN (FALSE)
+END AS `thirty_day_mort`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `intime`, `LHS`.`hadm_id` AS `hadm_id`, `LHS`.`stay_id` AS `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`, `gender`, `anchor_age`, `anchor_year`, `anchor_year_group`, `dod`, `age_hadm`, `sodium`, `chloride`, `potassium`, `bicarbonate`, `hematocrit`, `creatinine`, `wbc_count`, `glucose`, `bp_systolic`, `bp_mean`, `resp_rate`, `heart_rate`, `temp`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`, `gender`, `anchor_age`, `anchor_year`, `anchor_year_group`, `dod`, `age_hadm`, `sodium`, `chloride`, `potassium`, `bicarbonate`, `hematocrit`, `creatinine`, `wbc_count`, `glucose`
+FROM (SELECT *
+FROM (SELECT `subject_id`, `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`, `gender`, `anchor_age`, `anchor_year`, `anchor_year_group`, `dod`, `anchor_age` + EXTRACT(year FROM `admittime`) - `anchor_year` AS `age_hadm`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`, `gender`, `anchor_age`, `anchor_year`, `anchor_year_group`, `dod`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `intime`, `LHS`.`hadm_id` AS `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`, `admittime`, `dischtime`, `deathtime`, `admission_type`, `admission_location`, `discharge_location`, `insurance`, `language`, `marital_status`, `ethnicity`, `edregtime`, `edouttime`, `hospital_expire_flag`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `LHS`
+LEFT JOIN (SELECT * FROM `admissions` AS `LHS`
+WHERE EXISTS (
+  SELECT 1 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `RHS`
+  WHERE (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`hadm_id` = `RHS`.`hadm_id`)
+)) `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`hadm_id` = `RHS`.`hadm_id`)
+) `LHS`
+LEFT JOIN (SELECT * FROM `patients` AS `LHS`
+WHERE EXISTS (
+  SELECT 1 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `RHS`
+  WHERE (`LHS`.`subject_id` = `RHS`.`subject_id`)
+)) `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id`)
+) `q01`) `q02`
+WHERE (`age_hadm` &gt;= 18.0)) `LHS`
+LEFT JOIN (SELECT `subject_id`, MAX(IF(`itemid` = 'sodium', `valuenum`, NULL)) AS `sodium`, MAX(IF(`itemid` = 'chloride', `valuenum`, NULL)) AS `chloride`, MAX(IF(`itemid` = 'potassium', `valuenum`, NULL)) AS `potassium`, MAX(IF(`itemid` = 'bicarbonate', `valuenum`, NULL)) AS `bicarbonate`, MAX(IF(`itemid` = 'hematocrit', `valuenum`, NULL)) AS `hematocrit`, MAX(IF(`itemid` = 'creatinine', `valuenum`, NULL)) AS `creatinine`, MAX(IF(`itemid` = 'wbc_count', `valuenum`, NULL)) AS `wbc_count`, MAX(IF(`itemid` = 'glucose', `valuenum`, NULL)) AS `glucose`
+FROM (SELECT `subject_id`, CASE
+WHEN (`itemid` = 50882.0) THEN ('bicarbonate')
+WHEN (`itemid` = 50902.0) THEN ('chloride')
+WHEN (`itemid` = 50912.0) THEN ('creatinine')
+WHEN (`itemid` = 50931.0) THEN ('glucose')
+WHEN (`itemid` = 50971.0) THEN ('potassium')
+WHEN (`itemid` = 50983.0) THEN ('sodium')
+WHEN (`itemid` = 51221.0) THEN ('hematocrit')
+WHEN (`itemid` = 51301.0) THEN ('wbc_count')
+END AS `itemid`, `valuenum`
+FROM (SELECT `subject_id`, `itemid`, `valuenum`
+FROM (SELECT `subject_id`, `itemid`, MIN(`charttime`) AS `charttime`, MIN(`valuenum`) AS `valuenum`, MIN(`intime`) AS `intime`, MIN(`outtime`) AS `outtime`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `itemid`, `charttime`, `valuenum`, `intime`, `outtime`
+FROM (SELECT *
+FROM (SELECT * FROM (SELECT `subject_id`, `itemid`, `charttime`, `valuenum`
+FROM `labevents`) `LHS`
+WHERE EXISTS (
+  SELECT 1 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `RHS`
+  WHERE (`LHS`.`subject_id` = `RHS`.`subject_id`)
+)) `q01`
+WHERE (`itemid` = 50912.0 OR `itemid` = 50971.0 OR `itemid` = 50983.0 OR `itemid` = 50902.0 OR `itemid` = 50882.0 OR `itemid` = 51221.0 OR `itemid` = 51301.0 OR `itemid` = 50931.0)) `LHS`
+LEFT JOIN (SELECT `subject_id`, `intime`, `outtime`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `q01`) `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id`)
+) `q02`
+WHERE (`charttime` &gt;= `intime` AND `charttime` &lt;= `outtime`)
+GROUP BY `subject_id`, `itemid`) `q03`) `q04`) `q05`
+GROUP BY `subject_id`) `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id`)
+) `LHS`
+LEFT JOIN (SELECT `subject_id`, `hadm_id`, `stay_id`, MAX(IF(`itemid` = 'bp_systolic', `valuenum`, NULL)) AS `bp_systolic`, MAX(IF(`itemid` = 'bp_mean', `valuenum`, NULL)) AS `bp_mean`, MAX(IF(`itemid` = 'resp_rate', `valuenum`, NULL)) AS `resp_rate`, MAX(IF(`itemid` = 'heart_rate', `valuenum`, NULL)) AS `heart_rate`, MAX(IF(`itemid` = 'temp', `valuenum`, NULL)) AS `temp`
+FROM (SELECT `subject_id`, `hadm_id`, `stay_id`, CASE
+WHEN (`itemid` = 220045.0) THEN ('heart_rate')
+WHEN (`itemid` = 220181.0) THEN ('bp_mean')
+WHEN (`itemid` = 220179.0) THEN ('bp_systolic')
+WHEN (`itemid` = 223761.0) THEN ('temp')
+WHEN (`itemid` = 220210.0) THEN ('resp_rate')
+END AS `itemid`, `valuenum`
+FROM (SELECT `subject_id`, `hadm_id`, `stay_id`, `itemid`, `valuenum`
+FROM (SELECT `subject_id`, `itemid`, MIN(`hadm_id`) AS `hadm_id`, MIN(`stay_id`) AS `stay_id`, MIN(`charttime`) AS `charttime`, MIN(`storetime`) AS `storetime`, MIN(`value`) AS `value`, MIN(`valuenum`) AS `valuenum`, MIN(`valueuom`) AS `valueuom`, MIN(`warning`) AS `warning`, MIN(`intime`) AS `intime`, MIN(`outtime`) AS `outtime`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `hadm_id`, `stay_id`, `charttime`, `storetime`, `itemid`, `value`, `valuenum`, `valueuom`, `warning`, `intime`, `outtime`
+FROM (SELECT *
+FROM (SELECT * FROM `chartevents` AS `LHS`
+WHERE EXISTS (
+  SELECT 1 FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `RHS`
+  WHERE (`LHS`.`subject_id` = `RHS`.`subject_id`)
+)) `q01`
+WHERE (`itemid` = 220045.0 OR `itemid` = 220181.0 OR `itemid` = 220179.0 OR `itemid` = 223761.0 OR `itemid` = 220210.0)) `LHS`
+LEFT JOIN (SELECT `subject_id`, `intime`, `outtime`
+FROM (SELECT `LHS`.`subject_id` AS `subject_id`, `LHS`.`intime` AS `intime`, `hadm_id`, `stay_id`, `first_careunit`, `last_careunit`, `outtime`, `los`
+FROM (SELECT `subject_id`, MIN(`intime`) AS `intime`
+FROM (SELECT `subject_id`, `intime`
+FROM `icustays`) `q01`
+GROUP BY `subject_id`) `LHS`
+LEFT JOIN `icustays` AS `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`intime` = `RHS`.`intime`)
+) `q01`) `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id`)
+) `q02`
+WHERE (`charttime` &gt;= `intime` AND `charttime` &lt;= `outtime`)
+GROUP BY `subject_id`, `itemid`) `q03`) `q04`) `q05`
+GROUP BY `subject_id`, `hadm_id`, `stay_id`) `RHS`
+ON (`LHS`.`subject_id` = `RHS`.`subject_id` AND `LHS`.`hadm_id` = `RHS`.`hadm_id` AND `LHS`.`stay_id` = `RHS`.`stay_id`)
+) `q06`
+# Source:   lazy query [?? x 41]
+# Database: BigQueryConnection
+   subject_id intime               hadm_id  stay_id first_careunit
+        &lt;int&gt; &lt;dttm&gt;                 &lt;int&gt;    &lt;int&gt; &lt;chr&gt;         
+ 1   12776735 2200-07-12 00:33:00 20817525 34547665 Neuro Stepdown
+ 2   16256226 2150-12-20 16:09:08 20013290 39289362 Neuro Stepdown
+ 3   12974563 2138-11-13 23:30:01 29618057 32563675 Neuro Stepdown
+ 4   14609218 2174-06-28 21:13:00 20606189 34947848 Neuro Stepdown
+ 5   12687112 2162-05-31 18:08:45 26132667 37445058 Neuro Stepdown
+ 6   18190935 2115-11-12 23:23:32 21137829 34338402 Neuro Stepdown
+ 7   10404210 2161-03-03 18:30:00 22880512 30254828 Neuro Stepdown
+ 8   12552973 2135-09-21 18:12:03 21320643 30261549 Neuro Stepdown
+ 9   14303051 2175-11-20 01:02:00 26559537 30401486 Neuro Stepdown
+10   12347959 2140-07-11 17:54:14 22779073 30503984 Neuro Stepdown
+   last_careunit  outtime               los admittime          
+   &lt;chr&gt;          &lt;dttm&gt;              &lt;dbl&gt; &lt;dttm&gt;             
+ 1 Neuro Stepdown 2200-07-13 16:44:40 1.67  2200-07-11 22:46:00
+ 2 Neuro Stepdown 2150-12-21 14:58:40 0.951 2150-12-20 03:00:00
+ 3 Neuro Stepdown 2138-11-15 16:25:19 1.71  2138-11-13 01:07:00
+ 4 Neuro Stepdown 2174-07-05 17:01:32 6.83  2174-06-28 20:40:00
+ 5 Neuro Stepdown 2162-06-04 10:16:13 3.67  2162-05-31 15:36:00
+ 6 Neuro Stepdown 2115-11-15 18:06:26 2.78  2115-11-02 18:38:00
+ 7 Neuro Stepdown 2161-03-05 18:10:31 1.99  2161-03-03 17:45:00
+ 8 Neuro Stepdown 2135-09-23 12:56:46 1.78  2135-09-21 02:12:00
+ 9 Neuro Stepdown 2175-11-21 16:06:17 1.63  2175-11-20 00:08:00
+10 Neuro Stepdown 2140-07-19 13:01:05 7.80  2140-07-11 17:52:00
+   dischtime           deathtime admission_type             
+   &lt;dttm&gt;              &lt;dttm&gt;    &lt;chr&gt;                      
+ 1 2200-07-19 12:00:00 NA        OBSERVATION ADMIT          
+ 2 2150-12-21 14:50:00 NA        SURGICAL SAME DAY ADMISSION
+ 3 2138-11-15 15:53:00 NA        OBSERVATION ADMIT          
+ 4 2174-07-05 16:45:00 NA        OBSERVATION ADMIT          
+ 5 2162-06-04 10:16:00 NA        OBSERVATION ADMIT          
+ 6 2115-11-26 14:30:00 NA        OBSERVATION ADMIT          
+ 7 2161-03-05 18:10:00 NA        OBSERVATION ADMIT          
+ 8 2135-09-23 12:56:00 NA        SURGICAL SAME DAY ADMISSION
+ 9 2175-11-21 15:30:00 NA        OBSERVATION ADMIT          
+10 2140-07-19 13:00:00 NA        URGENT                     
+   admission_location     discharge_location           insurance language
+   &lt;chr&gt;                  &lt;chr&gt;                        &lt;chr&gt;     &lt;chr&gt;   
+ 1 EMERGENCY ROOM         SKILLED NURSING FACILITY     Medicare  ENGLISH 
+ 2 PHYSICIAN REFERRAL     HOME                         Other     ENGLISH 
+ 3 EMERGENCY ROOM         HOME HEALTH CARE             Other     ENGLISH 
+ 4 EMERGENCY ROOM         REHAB                        Other     ENGLISH 
+ 5 PHYSICIAN REFERRAL     HOME                         Other     ENGLISH 
+ 6 TRANSFER FROM HOSPITAL CHRONIC/LONG TERM ACUTE CARE Other     ENGLISH 
+ 7 EMERGENCY ROOM         HOME                         Other     ENGLISH 
+ 8 PHYSICIAN REFERRAL     HOME                         Other     ENGLISH 
+ 9 EMERGENCY ROOM         HOME                         Other     ENGLISH 
+10 TRANSFER FROM HOSPITAL REHAB                        Other     ENGLISH 
+   marital_status ethnicity              edregtime           edouttime          
+   &lt;chr&gt;          &lt;chr&gt;                  &lt;dttm&gt;              &lt;dttm&gt;             
+ 1 MARRIED        OTHER                  2200-07-11 15:27:00 2200-07-12 00:33:00
+ 2 SINGLE         OTHER                  NA                  NA                 
+ 3 WIDOWED        WHITE                  2138-11-12 17:26:00 2138-11-13 20:21:00
+ 4 SINGLE         WHITE                  2174-06-28 18:46:00 2174-06-28 21:13:00
+ 5 SINGLE         BLACK/AFRICAN AMERICAN 2162-05-31 09:36:00 2162-05-31 19:59:00
+ 6 DIVORCED       WHITE                  2115-11-02 13:59:00 2115-11-02 22:17:00
+ 7 MARRIED        HISPANIC/LATINO        2161-03-03 13:39:00 2161-03-03 18:30:00
+ 8 MARRIED        WHITE                  NA                  NA                 
+ 9 SINGLE         WHITE                  2175-11-19 10:42:00 2175-11-20 01:02:00
+10 MARRIED        WHITE                  NA                  NA                 
+   hospital_expire_flag gender anchor_age anchor_year anchor_year_group
+                  &lt;int&gt; &lt;chr&gt;       &lt;int&gt;       &lt;int&gt; &lt;chr&gt;            
+ 1                    0 M              72        2192 2008 - 2010      
+ 2                    0 F              49        2150 2017 - 2019      
+ 3                    0 F              72        2138 2014 - 2016      
+ 4                    0 F              69        2174 2017 - 2019      
+ 5                    0 M              57        2156 2011 - 2013      
+ 6                    0 F              57        2115 2017 - 2019      
+ 7                    0 F              46        2161 2017 - 2019      
+ 8                    0 F              48        2131 2011 - 2013      
+ 9                    0 F              24        2175 2014 - 2016      
+10                    0 F              49        2140 2017 - 2019      
+   dod        age_hadm sodium chloride potassium bicarbonate hematocrit
+   &lt;date&gt;        &lt;int&gt;  &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;
+ 1 NA               80    129       97       2.7          22       27.7
+ 2 NA               49    141      108       4            21       30.5
+ 3 NA               72    139      104       4.4          16       41.6
+ 4 NA               69    129       95       3.5          23       29.6
+ 5 NA               63    143      105       4.9          19       29.4
+ 6 2115-12-11       57    130       93       3.8          23       29.4
+ 7 NA               46    137      104       4.1          26       32.5
+ 8 NA               52    141      104       4            22       36.1
+ 9 NA               24    138      103       4.1          24       34.7
+10 NA               49    135       98       3.7          19       32.1
+   creatinine wbc_count glucose bp_systolic bp_mean resp_rate heart_rate  temp
+        &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;
+ 1        0.9       6.6     106          98      55        11         51  97.8
+ 2        0.5       3.5      99          94      69         5         54  97.7
+ 3        1        10.6      78         123      80         8         59  97.9
+ 4        0.4       8.4      94          93      71         8         65  97.5
+ 5        7.8       5.3      87         118      76         0         72  97.7
+ 6        0.4       9.2      78         114      85        13         57  97.6
+ 7        0.7       3.6      99          77      57        11         67  97.6
+ 8        0.7      14.7     155         109      70        10         55  97.9
+ 9        0.8       6.4      85          71      50         0         51  97.6
+10        0.5       7.6      81         105      49         7         69  97.5
+   thirty_day_mort
+   &lt;lgl&gt;          
+ 1 FALSE          
+ 2 FALSE          
+ 3 FALSE          
+ 4 FALSE          
+ 5 FALSE          
+ 6 FALSE          
+ 7 FALSE          
+ 8 FALSE          
+ 9 FALSE          
+10 FALSE          
+# … with more rows</code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check thirty_day_mort values</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>icu_cohort <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"./mimiciv_shiny/icu_cohort.rds"</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(icu_cohort<span class="sc">$</span>thirty_day_mort)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+FALSE  TRUE 
+47642  5508 </code></pre>
+</div>
+</div>
+<p>Close database connection and clear workspace.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="q2.-shiny-app" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="q2.-shiny-app"><span class="header-section-number">2</span> Q2. Shiny app</h2>
+<p>Develop a Shiny app for exploring the ICU cohort data created in Q1. The app should reside in the <code>mimiciv_shiny</code> folder. The app should provide easy access to the graphical and numerical summaries of variables (demographics, lab measurements, vitals) in the ICU cohort.</p>
+<p>Q2 is developed in file <code>app.R</code> in the <code>mimiciv_shiny</code> folder.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
