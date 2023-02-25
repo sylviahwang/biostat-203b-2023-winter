@@ -7,7 +7,6 @@ sessionInfo()
 # app.R
 library(shiny)
 library(tidyverse)
-library(dplyr)
 
 icu_cohort <- readRDS("./mimiciv_shiny/icu_cohort.rds")
 table(icu_cohort$thirty_day_mort)
@@ -21,11 +20,11 @@ ui <- fluidPage(
                sidebarPanel(
                  selectInput("demo",
                              label = "Demographics:",
-                             choices = c("gender", "anchor_age",
-                                         "age_hadm", "ethnicity",
-                                         "language", "insurance",
-                                         "marital_status", "admission_type",
-                                         "thirty_day_mort")),
+                             choices = c("Gender", "Anchor age",
+                                         "Age at admission", "Ethnicity",
+                                         "Language", "Insurance",
+                                         "Marital status", "Admission type",
+                                         "Thirty-day mortality")),
                  sliderInput(inputId = "bins",
                              label = "Number of bins:",
                              min = 1,
@@ -106,47 +105,47 @@ ui <- fluidPage(
 server <- function(input, output) {
   output$demotable <- renderTable({
     x <- switch(input$demo,
-                gender          = icu_cohort %>% count(gender),
-                anchor_age      = summarise(icu_cohort, 
+                Gender          = icu_cohort %>% count(gender),
+                "Anchor age"      = summarise(icu_cohort, 
                                             mean = mean(anchor_age),
                                             median = median(anchor_age),
                                             sd = sd(anchor_age),
                                             min = min(anchor_age),
                                             max = max(anchor_age)),
-                age_hadm        = summarise(icu_cohort, 
+                "Age at admission"        = summarise(icu_cohort, 
                                             mean = mean(age_hadm),
                                             median = median(age_hadm),
                                             sd = sd(age_hadm),
                                             min = min(age_hadm),
                                             max = max(age_hadm)),
-                ethnicity       = icu_cohort %>% count(ethnicity),
-                language        = icu_cohort %>% count(language),
-                insurance       = icu_cohort %>% count(insurance),
-                marital_status  = icu_cohort %>% count(marital_status),
-                admission_type  = icu_cohort %>% count(admission_type),
-                thirty_day_mort = icu_cohort %>% count(thirty_day_mort))
+                Ethnicity       = icu_cohort %>% count(ethnicity),
+                Language        = icu_cohort %>% count(language),
+                Insurance       = icu_cohort %>% count(insurance),
+                "Marital status"  = icu_cohort %>% count(marital_status),
+                "Admission type"  = icu_cohort %>% count(admission_type),
+                "Thirty-day mortality" = icu_cohort %>% count(thirty_day_mort))
     x
   })
   
   output$demoPlot <- renderPlot({
     x <- switch(input$demo,
-                gender          = icu_cohort$gender,
-                anchor_age      = icu_cohort$anchor_age,
-                age_hadm        = icu_cohort$age_hadm,
-                ethnicity       = icu_cohort$ethnicity,
-                language        = icu_cohort$language,
-                insurance       = icu_cohort$insurance,
-                marital_status  = icu_cohort$marital_status,
-                admission_type  = icu_cohort$admission_type,
-                thirty_day_mort = icu_cohort$thirty_day_mort)
+                Gender          = icu_cohort$gender,
+                "Anchor age"      = icu_cohort$anchor_age,
+                "Age at admission"        = icu_cohort$age_hadm,
+                Ethnicity       = icu_cohort$ethnicity,
+                Language        = icu_cohort$language,
+                Insurance       = icu_cohort$insurance,
+                "Marital status"  = icu_cohort$marital_status,
+                "Admission type"  = icu_cohort$admission_type,
+                "Thirty-day mortality" = icu_cohort$thirty_day_mort)
     
-    if (input$demo %in% c("anchor_age", "age_hadm")) {
+    if (input$demo %in% c("Anchor age", "Age at admission")) {
       bins <- seq(min(x), max(x), length.out = input$bins + 1)
       hist(x, breaks = bins, col = "#106e82", border = "white",
            xlab = input$demo,
            main = paste("Histogram of", input$demo))
     }
-    else if (input$demo %in% c("ethnicity", "admission_type")) {
+    else if (input$demo %in% c("Ethnicity", "Admission type")) {
       par(mar = c(15, 4, 4, 4))
       plot_data <- table(factor(x, levels = unique(x)))
       barplot(plot_data, col = "#106e82",
