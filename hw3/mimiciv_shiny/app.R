@@ -8,7 +8,7 @@ sessionInfo()
 library(shiny)
 library(tidyverse)
 
-icu_cohort <- readRDS("./hw3/mimiciv_shiny/icu_cohort.rds")
+icu_cohort <- readRDS("icu_cohort.rds")
 table(icu_cohort$thirty_day_mort)
 
 #UI
