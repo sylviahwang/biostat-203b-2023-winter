@@ -23,17 +23,16 @@ knitr:
 
 Display machine information:
 ```{r}
-#| eval: false
-
 sessionInfo()
 ```
 Load database libraries and the tidyverse frontend:
 ```{r}
-#| eval: false
-
+suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(tidymodels))
 suppressPackageStartupMessages(library(lubridate))
+suppressPackageStartupMessages(library(GGally))
+suppressPackageStartupMessages(library(gtsummary))
 ```
 
 ## Predicting 30-day mortality
@@ -45,3 +44,19 @@ Using the ICU cohort `icu_cohort.rds` you built in Homework 3, develop at least 
 2. Train and tune the models using the training set.
 
 3. Compare model classification performance on the test set. Report both the area under ROC curve and accuracy for each model.
+
+```{r}
+# Data preparation
+icu_cohort <- readRDS("icu_cohort.rds") 
+icu_cohort_reduced <- icu_cohort %>% 
+  select("gender", "age_hadm", "marital_status", "ethnicity", "sodium",
+         "chloride", "potassium", "bicarbonate", "hematocrit", "creatinine",
+         "wbc_count", "glucose", "bp_systolic", "bp_mean", "resp_rate",
+         "heart_rate", "temp", "thirty_day_mort") 
+icu_cohort_reduced %>% tbl_summary(by = thirty_day_mort)
+```
+
+
+
+
+
