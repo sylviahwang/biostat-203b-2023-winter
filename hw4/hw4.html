@@ -2679,27 +2679,36 @@ loaded via a namespace (and not attached):
 <section id="predicting-30-day-mortality" class="level2" data-number="1">
 <h2 data-number="1" class="anchored" data-anchor-id="predicting-30-day-mortality"><span class="header-section-number">1</span> Predicting 30-day mortality</h2>
 <p>Using the ICU cohort <code>icu_cohort.rds</code> you built in Homework 3, develop at least three analytic approaches for predicting the 30-day mortality of patients admitted to ICU using demographic information (gender, age, marital status, ethnicity), first lab measurements during ICU stay, and first vital measurements during ICU stay. For example, you can use (1) logistic regression with elastic net (lasso + ridge) penalty (e.g., glmnet or keras package), (2) random forest, (3) boosting, and (4) support vector machines, or (5) MLP neural network (keras package)</p>
-<ol type="1">
-<li><p>Partition data into 50% training set and 50% test set. Stratify partitioning according the 30-day mortality status.</p></li>
-<li><p>Train and tune the models using the training set.</p></li>
-<li><p>Compare model classification performance on the test set. Report both the area under ROC curve and accuracy for each model.</p></li>
-</ol>
+<p>Data preparation: Create a reduced dataset containing only demographic information (gender, age, marital status, ethnicity), first lab measurements during ICU stay, first vital measurements during ICU stay, and thirty day mortality indicator. For lab and vital measurements, extreme outliers (those beyond the outer fence, i.e., +/-3*IQR) were reassigned as <code>NA</code>’s, because some obvious unrealistic values have been identified from the data (e.g. a negative heart rate or a heart rate of zero, etc.).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Data preparation</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>icu_cohort <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;icu_cohort.rds&quot;</span>) </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>icu_cohort_reduced <span class="ot">&lt;-</span> icu_cohort <span class="sc">%&gt;%</span> </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">&quot;gender&quot;</span>, <span class="st">&quot;age_hadm&quot;</span>, <span class="st">&quot;marital_status&quot;</span>, <span class="st">&quot;ethnicity&quot;</span>, <span class="st">&quot;sodium&quot;</span>,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;chloride&quot;</span>, <span class="st">&quot;potassium&quot;</span>, <span class="st">&quot;bicarbonate&quot;</span>, <span class="st">&quot;hematocrit&quot;</span>, <span class="st">&quot;creatinine&quot;</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;wbc_count&quot;</span>, <span class="st">&quot;glucose&quot;</span>, <span class="st">&quot;bp_systolic&quot;</span>, <span class="st">&quot;bp_mean&quot;</span>, <span class="st">&quot;resp_rate&quot;</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;heart_rate&quot;</span>, <span class="st">&quot;temp&quot;</span>, <span class="st">&quot;thirty_day_mort&quot;</span>) </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>icu_cohort_reduced <span class="sc">%&gt;%</span> <span class="fu">tbl_summary</span>(<span class="at">by =</span> thirty_day_mort)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>icu_cohort <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;icu_cohort.rds&quot;</span>) </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>icu_cohort_reduced <span class="ot">&lt;-</span> icu_cohort <span class="sc">%&gt;%</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">&quot;gender&quot;</span>, <span class="st">&quot;age_hadm&quot;</span>, <span class="st">&quot;marital_status&quot;</span>, <span class="st">&quot;ethnicity&quot;</span>, <span class="st">&quot;sodium&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;chloride&quot;</span>, <span class="st">&quot;potassium&quot;</span>, <span class="st">&quot;bicarbonate&quot;</span>, <span class="st">&quot;hematocrit&quot;</span>, <span class="st">&quot;creatinine&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;wbc_count&quot;</span>, <span class="st">&quot;glucose&quot;</span>, <span class="st">&quot;bp_systolic&quot;</span>, <span class="st">&quot;bp_mean&quot;</span>, <span class="st">&quot;resp_rate&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;heart_rate&quot;</span>, <span class="st">&quot;temp&quot;</span>, <span class="st">&quot;thirty_day_mort&quot;</span>) </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;sodium&quot;</span>, <span class="st">&quot;chloride&quot;</span>, <span class="st">&quot;potassium&quot;</span>, <span class="st">&quot;bicarbonate&quot;</span>, <span class="st">&quot;hematocrit&quot;</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;creatinine&quot;</span>, <span class="st">&quot;wbc_count&quot;</span>, <span class="st">&quot;glucose&quot;</span>, <span class="st">&quot;bp_systolic&quot;</span>, <span class="st">&quot;bp_mean&quot;</span>, </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;resp_rate&quot;</span>, <span class="st">&quot;heart_rate&quot;</span>, <span class="st">&quot;temp&quot;</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>outlier_removed <span class="ot">&lt;-</span> <span class="cf">function</span>(x){</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    p25 <span class="ot">&lt;-</span> <span class="fu">quantile</span>(x, <span class="at">probs =</span> <span class="fl">0.25</span>, <span class="at">na.rm=</span>T)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    p75 <span class="ot">&lt;-</span> <span class="fu">quantile</span>(x, <span class="at">probs =</span> <span class="fl">0.75</span>, <span class="at">na.rm=</span>T)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    IQR <span class="ot">&lt;-</span> p75 <span class="sc">-</span> p25</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(x <span class="sc">&gt;</span> p75 <span class="sc">+</span> <span class="dv">3</span> <span class="sc">*</span> IQR <span class="sc">|</span> x <span class="sc">&lt;</span> p25 <span class="sc">-</span> <span class="dv">3</span> <span class="sc">*</span> IQR , <span class="cn">NA</span>, x)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>lab_vital <span class="ot">&lt;-</span> icu_cohort_reduced <span class="sc">%&gt;%</span> </span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(vars)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">apply</span>(<span class="dv">2</span>, outlier_removed)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>icu_cohort_reduced[, <span class="fu">colnames</span>(lab_vital)] <span class="ot">&lt;-</span> lab_vital</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>icu_cohort_reduced <span class="sc">%&gt;%</span> <span class="fu">tbl_summary</span>(<span class="at">by =</span> thirty_day_mort)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
-<div id="ftjclfsiur" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="hcfpgrdaws" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
-:where(#ftjclfsiur) .gt_table {
+:where(#hcfpgrdaws) .gt_table {
 display: table;
 border-collapse: collapse;
 margin-left: auto;
@@ -2723,7 +2732,7 @@ border-left-style: none;
 border-left-width: 2px;
 border-left-color: #D3D3D3;
 }
-:where(#ftjclfsiur) .gt_heading {
+:where(#hcfpgrdaws) .gt_heading {
 background-color: #FFFFFF;
 text-align: center;
 border-bottom-color: #FFFFFF;
@@ -2734,11 +2743,11 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-:where(#ftjclfsiur) .gt_caption {
+:where(#hcfpgrdaws) .gt_caption {
 padding-top: 4px;
 padding-bottom: 4px;
 }
-:where(#ftjclfsiur) .gt_title {
+:where(#hcfpgrdaws) .gt_title {
 color: #333333;
 font-size: 125%;
 font-weight: initial;
@@ -2749,7 +2758,7 @@ padding-right: 5px;
 border-bottom-color: #FFFFFF;
 border-bottom-width: 0;
 }
-:where(#ftjclfsiur) .gt_subtitle {
+:where(#hcfpgrdaws) .gt_subtitle {
 color: #333333;
 font-size: 85%;
 font-weight: initial;
@@ -2760,12 +2769,12 @@ padding-right: 5px;
 border-top-color: #FFFFFF;
 border-top-width: 0;
 }
-:where(#ftjclfsiur) .gt_bottom_border {
+:where(#hcfpgrdaws) .gt_bottom_border {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-:where(#ftjclfsiur) .gt_col_headings {
+:where(#hcfpgrdaws) .gt_col_headings {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -2779,7 +2788,7 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-:where(#ftjclfsiur) .gt_col_heading {
+:where(#hcfpgrdaws) .gt_col_heading {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -2798,7 +2807,7 @@ padding-left: 5px;
 padding-right: 5px;
 overflow-x: hidden;
 }
-:where(#ftjclfsiur) .gt_column_spanner_outer {
+:where(#hcfpgrdaws) .gt_column_spanner_outer {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -2809,13 +2818,13 @@ padding-bottom: 0;
 padding-left: 4px;
 padding-right: 4px;
 }
-:where(#ftjclfsiur) .gt_column_spanner_outer:first-child {
+:where(#hcfpgrdaws) .gt_column_spanner_outer:first-child {
 padding-left: 0;
 }
-:where(#ftjclfsiur) .gt_column_spanner_outer:last-child {
+:where(#hcfpgrdaws) .gt_column_spanner_outer:last-child {
 padding-right: 0;
 }
-:where(#ftjclfsiur) .gt_column_spanner {
+:where(#hcfpgrdaws) .gt_column_spanner {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
@@ -2826,7 +2835,7 @@ overflow-x: hidden;
 display: inline-block;
 width: 100%;
 }
-:where(#ftjclfsiur) .gt_group_heading {
+:where(#hcfpgrdaws) .gt_group_heading {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -2851,7 +2860,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 text-align: left;
 }
-:where(#ftjclfsiur) .gt_empty_group_heading {
+:where(#hcfpgrdaws) .gt_empty_group_heading {
 padding: 0.5px;
 color: #333333;
 background-color: #FFFFFF;
@@ -2865,13 +2874,13 @@ border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 vertical-align: middle;
 }
-:where(#ftjclfsiur) .gt_from_md > :first-child {
+:where(#hcfpgrdaws) .gt_from_md > :first-child {
 margin-top: 0;
 }
-:where(#ftjclfsiur) .gt_from_md > :last-child {
+:where(#hcfpgrdaws) .gt_from_md > :last-child {
 margin-bottom: 0;
 }
-:where(#ftjclfsiur) .gt_row {
+:where(#hcfpgrdaws) .gt_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -2889,7 +2898,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 overflow-x: hidden;
 }
-:where(#ftjclfsiur) .gt_stub {
+:where(#hcfpgrdaws) .gt_stub {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -2901,7 +2910,7 @@ border-right-color: #D3D3D3;
 padding-left: 5px;
 padding-right: 5px;
 }
-:where(#ftjclfsiur) .gt_stub_row_group {
+:where(#hcfpgrdaws) .gt_stub_row_group {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -2914,10 +2923,10 @@ padding-left: 5px;
 padding-right: 5px;
 vertical-align: top;
 }
-:where(#ftjclfsiur) .gt_row_group_first td {
+:where(#hcfpgrdaws) .gt_row_group_first td {
 border-top-width: 2px;
 }
-:where(#ftjclfsiur) .gt_summary_row {
+:where(#hcfpgrdaws) .gt_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -2926,14 +2935,14 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-:where(#ftjclfsiur) .gt_first_summary_row {
+:where(#hcfpgrdaws) .gt_first_summary_row {
 border-top-style: solid;
 border-top-color: #D3D3D3;
 }
-:where(#ftjclfsiur) .gt_first_summary_row.thick {
+:where(#hcfpgrdaws) .gt_first_summary_row.thick {
 border-top-width: 2px;
 }
-:where(#ftjclfsiur) .gt_last_summary_row {
+:where(#hcfpgrdaws) .gt_last_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -2942,7 +2951,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-:where(#ftjclfsiur) .gt_grand_summary_row {
+:where(#hcfpgrdaws) .gt_grand_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -2951,7 +2960,7 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-:where(#ftjclfsiur) .gt_first_grand_summary_row {
+:where(#hcfpgrdaws) .gt_first_grand_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -2960,10 +2969,10 @@ border-top-style: double;
 border-top-width: 6px;
 border-top-color: #D3D3D3;
 }
-:where(#ftjclfsiur) .gt_striped {
+:where(#hcfpgrdaws) .gt_striped {
 background-color: rgba(128, 128, 128, 0.05);
 }
-:where(#ftjclfsiur) .gt_table_body {
+:where(#hcfpgrdaws) .gt_table_body {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -2971,7 +2980,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-:where(#ftjclfsiur) .gt_footnotes {
+:where(#hcfpgrdaws) .gt_footnotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -2984,7 +2993,7 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-:where(#ftjclfsiur) .gt_footnote {
+:where(#hcfpgrdaws) .gt_footnote {
 margin: 0px;
 font-size: 90%;
 padding-left: 4px;
@@ -2992,7 +3001,7 @@ padding-right: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-:where(#ftjclfsiur) .gt_sourcenotes {
+:where(#hcfpgrdaws) .gt_sourcenotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -3005,58 +3014,58 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-:where(#ftjclfsiur) .gt_sourcenote {
+:where(#hcfpgrdaws) .gt_sourcenote {
 font-size: 90%;
 padding-top: 4px;
 padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-:where(#ftjclfsiur) .gt_left {
+:where(#hcfpgrdaws) .gt_left {
 text-align: left;
 }
-:where(#ftjclfsiur) .gt_center {
+:where(#hcfpgrdaws) .gt_center {
 text-align: center;
 }
-:where(#ftjclfsiur) .gt_right {
+:where(#hcfpgrdaws) .gt_right {
 text-align: right;
 font-variant-numeric: tabular-nums;
 }
-:where(#ftjclfsiur) .gt_font_normal {
+:where(#hcfpgrdaws) .gt_font_normal {
 font-weight: normal;
 }
-:where(#ftjclfsiur) .gt_font_bold {
+:where(#hcfpgrdaws) .gt_font_bold {
 font-weight: bold;
 }
-:where(#ftjclfsiur) .gt_font_italic {
+:where(#hcfpgrdaws) .gt_font_italic {
 font-style: italic;
 }
-:where(#ftjclfsiur) .gt_super {
+:where(#hcfpgrdaws) .gt_super {
 font-size: 65%;
 }
-:where(#ftjclfsiur) .gt_footnote_marks {
+:where(#hcfpgrdaws) .gt_footnote_marks {
 font-style: italic;
 font-weight: normal;
 font-size: 75%;
 vertical-align: 0.4em;
 }
-:where(#ftjclfsiur) .gt_asterisk {
+:where(#hcfpgrdaws) .gt_asterisk {
 font-size: 100%;
 vertical-align: 0;
 }
-:where(#ftjclfsiur) .gt_indent_1 {
+:where(#hcfpgrdaws) .gt_indent_1 {
 text-indent: 5px;
 }
-:where(#ftjclfsiur) .gt_indent_2 {
+:where(#hcfpgrdaws) .gt_indent_2 {
 text-indent: 10px;
 }
-:where(#ftjclfsiur) .gt_indent_3 {
+:where(#hcfpgrdaws) .gt_indent_3 {
 text-indent: 15px;
 }
-:where(#ftjclfsiur) .gt_indent_4 {
+:where(#hcfpgrdaws) .gt_indent_4 {
 text-indent: 20px;
 }
-:where(#ftjclfsiur) .gt_indent_5 {
+:where(#hcfpgrdaws) .gt_indent_5 {
 text-indent: 25px;
 }
 </style>
@@ -3131,26 +3140,26 @@ text-indent: 25px;
 <td headers="stat_1" class="gt_row gt_center">137.0 (134.0, 139.0)</td>
 <td headers="stat_2" class="gt_row gt_center">136.0 (132.0, 139.0)</td></tr>
     <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
-<td headers="stat_1" class="gt_row gt_center">1,323</td>
-<td headers="stat_2" class="gt_row gt_center">429</td></tr>
+<td headers="stat_1" class="gt_row gt_center">1,686</td>
+<td headers="stat_2" class="gt_row gt_center">534</td></tr>
     <tr><td headers="label" class="gt_row gt_left">chloride</td>
-<td headers="stat_1" class="gt_row gt_center">102.0 (98.0, 105.0)</td>
+<td headers="stat_1" class="gt_row gt_center">102.0 (99.0, 105.0)</td>
 <td headers="stat_2" class="gt_row gt_center">100.0 (95.0, 105.0)</td></tr>
     <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
-<td headers="stat_1" class="gt_row gt_center">1,321</td>
-<td headers="stat_2" class="gt_row gt_center">432</td></tr>
+<td headers="stat_1" class="gt_row gt_center">1,432</td>
+<td headers="stat_2" class="gt_row gt_center">461</td></tr>
     <tr><td headers="label" class="gt_row gt_left">potassium</td>
 <td headers="stat_1" class="gt_row gt_center">3.70 (3.40, 4.10)</td>
 <td headers="stat_2" class="gt_row gt_center">3.60 (3.20, 4.10)</td></tr>
     <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
-<td headers="stat_1" class="gt_row gt_center">1,322</td>
-<td headers="stat_2" class="gt_row gt_center">430</td></tr>
+<td headers="stat_1" class="gt_row gt_center">1,340</td>
+<td headers="stat_2" class="gt_row gt_center">475</td></tr>
     <tr><td headers="label" class="gt_row gt_left">bicarbonate</td>
 <td headers="stat_1" class="gt_row gt_center">22.0 (20.0, 24.0)</td>
 <td headers="stat_2" class="gt_row gt_center">18.0 (14.0, 22.0)</td></tr>
     <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
-<td headers="stat_1" class="gt_row gt_center">1,341</td>
-<td headers="stat_2" class="gt_row gt_center">439</td></tr>
+<td headers="stat_1" class="gt_row gt_center">1,391</td>
+<td headers="stat_2" class="gt_row gt_center">453</td></tr>
     <tr><td headers="label" class="gt_row gt_left">hematocrit</td>
 <td headers="stat_1" class="gt_row gt_center">30 (25, 35)</td>
 <td headers="stat_2" class="gt_row gt_center">27 (22, 32)</td></tr>
@@ -3158,53 +3167,53 @@ text-indent: 25px;
 <td headers="stat_1" class="gt_row gt_center">1,392</td>
 <td headers="stat_2" class="gt_row gt_center">449</td></tr>
     <tr><td headers="label" class="gt_row gt_left">creatinine</td>
-<td headers="stat_1" class="gt_row gt_center">0.80 (0.60, 1.10)</td>
-<td headers="stat_2" class="gt_row gt_center">1.10 (0.70, 1.70)</td></tr>
+<td headers="stat_1" class="gt_row gt_center">0.80 (0.60, 1.00)</td>
+<td headers="stat_2" class="gt_row gt_center">1.00 (0.70, 1.40)</td></tr>
     <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
-<td headers="stat_1" class="gt_row gt_center">1,333</td>
-<td headers="stat_2" class="gt_row gt_center">439</td></tr>
+<td headers="stat_1" class="gt_row gt_center">3,435</td>
+<td headers="stat_2" class="gt_row gt_center">1,010</td></tr>
     <tr><td headers="label" class="gt_row gt_left">wbc_count</td>
-<td headers="stat_1" class="gt_row gt_center">8.4 (6.3, 11.1)</td>
-<td headers="stat_2" class="gt_row gt_center">9.4 (6.2, 13.6)</td></tr>
+<td headers="stat_1" class="gt_row gt_center">8.4 (6.3, 11.0)</td>
+<td headers="stat_2" class="gt_row gt_center">9.1 (6.0, 12.8)</td></tr>
     <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
-<td headers="stat_1" class="gt_row gt_center">1,530</td>
-<td headers="stat_2" class="gt_row gt_center">458</td></tr>
+<td headers="stat_1" class="gt_row gt_center">1,850</td>
+<td headers="stat_2" class="gt_row gt_center">689</td></tr>
     <tr><td headers="label" class="gt_row gt_left">glucose</td>
-<td headers="stat_1" class="gt_row gt_center">103 (90, 122)</td>
-<td headers="stat_2" class="gt_row gt_center">102 (82, 130)</td></tr>
+<td headers="stat_1" class="gt_row gt_center">103 (89, 121)</td>
+<td headers="stat_2" class="gt_row gt_center">100 (80, 124)</td></tr>
     <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
-<td headers="stat_1" class="gt_row gt_center">1,432</td>
-<td headers="stat_2" class="gt_row gt_center">443</td></tr>
+<td headers="stat_1" class="gt_row gt_center">2,052</td>
+<td headers="stat_2" class="gt_row gt_center">680</td></tr>
     <tr><td headers="label" class="gt_row gt_left">bp_systolic</td>
 <td headers="stat_1" class="gt_row gt_center">93 (83, 104)</td>
-<td headers="stat_2" class="gt_row gt_center">80 (66, 92)</td></tr>
+<td headers="stat_2" class="gt_row gt_center">80 (67, 92)</td></tr>
     <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
-<td headers="stat_1" class="gt_row gt_center">421</td>
-<td headers="stat_2" class="gt_row gt_center">263</td></tr>
+<td headers="stat_1" class="gt_row gt_center">494</td>
+<td headers="stat_2" class="gt_row gt_center">337</td></tr>
     <tr><td headers="label" class="gt_row gt_left">bp_mean</td>
 <td headers="stat_1" class="gt_row gt_center">59 (52, 68)</td>
 <td headers="stat_2" class="gt_row gt_center">51 (41, 60)</td></tr>
     <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
-<td headers="stat_1" class="gt_row gt_center">444</td>
-<td headers="stat_2" class="gt_row gt_center">261</td></tr>
+<td headers="stat_1" class="gt_row gt_center">500</td>
+<td headers="stat_2" class="gt_row gt_center">292</td></tr>
     <tr><td headers="label" class="gt_row gt_left">resp_rate</td>
 <td headers="stat_1" class="gt_row gt_center">11.0 (9.0, 13.0)</td>
 <td headers="stat_2" class="gt_row gt_center">9.0 (0.0, 13.0)</td></tr>
     <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
-<td headers="stat_1" class="gt_row gt_center">54</td>
-<td headers="stat_2" class="gt_row gt_center">8</td></tr>
+<td headers="stat_1" class="gt_row gt_center">59</td>
+<td headers="stat_2" class="gt_row gt_center">20</td></tr>
     <tr><td headers="label" class="gt_row gt_left">heart_rate</td>
 <td headers="stat_1" class="gt_row gt_center">65 (57, 74)</td>
-<td headers="stat_2" class="gt_row gt_center">59 (30, 73)</td></tr>
+<td headers="stat_2" class="gt_row gt_center">65 (54, 78)</td></tr>
     <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
-<td headers="stat_1" class="gt_row gt_center">13</td>
-<td headers="stat_2" class="gt_row gt_center">2</td></tr>
+<td headers="stat_1" class="gt_row gt_center">133</td>
+<td headers="stat_2" class="gt_row gt_center">1,224</td></tr>
     <tr><td headers="label" class="gt_row gt_left">temp</td>
 <td headers="stat_1" class="gt_row gt_center">97.50 (97.00, 97.90)</td>
-<td headers="stat_2" class="gt_row gt_center">97.20 (96.10, 97.70)</td></tr>
+<td headers="stat_2" class="gt_row gt_center">97.30 (96.30, 97.70)</td></tr>
     <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
-<td headers="stat_1" class="gt_row gt_center">477</td>
-<td headers="stat_2" class="gt_row gt_center">477</td></tr>
+<td headers="stat_1" class="gt_row gt_center">1,167</td>
+<td headers="stat_2" class="gt_row gt_center">861</td></tr>
   </tbody>
   
   <tfoot class="gt_footnotes">
@@ -3216,6 +3225,11 @@ text-indent: 25px;
 </div>
 </div>
 </div>
+<ol type="1">
+<li><p>Partition data into 50% training set and 50% test set. Stratify partitioning according the 30-day mortality status.</p></li>
+<li><p>Train and tune the models using the training set.</p></li>
+<li><p>Compare model classification performance on the test set. Report both the area under ROC curve and accuracy for each model.</p></li>
+</ol>
 </section>
 
 </main>

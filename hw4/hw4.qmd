@@ -39,24 +39,38 @@ suppressPackageStartupMessages(library(gtsummary))
 
 Using the ICU cohort `icu_cohort.rds` you built in Homework 3, develop at least three analytic approaches for predicting the 30-day mortality of patients admitted to ICU using demographic information (gender, age, marital status, ethnicity), first lab measurements during ICU stay, and first vital measurements during ICU stay. For example, you can use (1) logistic regression with elastic net (lasso + ridge) penalty (e.g., glmnet or keras package), (2) random forest, (3) boosting, and (4) support vector machines, or (5) MLP neural network (keras package)
 
-1. Partition data into 50% training set and 50% test set. Stratify partitioning according the 30-day mortality status.
-
-2. Train and tune the models using the training set.
-
-3. Compare model classification performance on the test set. Report both the area under ROC curve and accuracy for each model.
-
+Data preparation:
+Create a reduced dataset containing only demographic information (gender, age, marital status, ethnicity), first lab measurements during ICU stay, first vital measurements during ICU stay, and thirty day mortality indicator.
+For lab and vital measurements, extreme outliers (those beyond the outer fence, i.e., +/-3*IQR) were reassigned as `NA`'s, because some obvious unrealistic values have been identified from the data (e.g. a negative heart rate or a heart rate of zero, etc.).
 ```{r}
-# Data preparation
 icu_cohort <- readRDS("icu_cohort.rds") 
 icu_cohort_reduced <- icu_cohort %>% 
   select("gender", "age_hadm", "marital_status", "ethnicity", "sodium",
          "chloride", "potassium", "bicarbonate", "hematocrit", "creatinine",
          "wbc_count", "glucose", "bp_systolic", "bp_mean", "resp_rate",
          "heart_rate", "temp", "thirty_day_mort") 
+
+vars <- c("sodium", "chloride", "potassium", "bicarbonate", "hematocrit",
+          "creatinine", "wbc_count", "glucose", "bp_systolic", "bp_mean", 
+          "resp_rate", "heart_rate", "temp")
+outlier_removed <- function(x){
+    p25 <- quantile(x, probs = 0.25, na.rm=T)
+    p75 <- quantile(x, probs = 0.75, na.rm=T)
+    IQR <- p75 - p25
+    x <- ifelse(x > p75 + 3 * IQR | x < p25 - 3 * IQR , NA, x)
+}
+lab_vital <- icu_cohort_reduced %>% 
+  select(all_of(vars)) %>% 
+  apply(2, outlier_removed)
+icu_cohort_reduced[, colnames(lab_vital)] <- lab_vital
 icu_cohort_reduced %>% tbl_summary(by = thirty_day_mort)
 ```
 
+1. Partition data into 50% training set and 50% test set. Stratify partitioning according the 30-day mortality status.
 
+2. Train and tune the models using the training set.
+
+3. Compare model classification performance on the test set. Report both the area under ROC curve and accuracy for each model.
 
 
 
