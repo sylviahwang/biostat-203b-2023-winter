@@ -89,7 +89,7 @@ dim(test)
 
 #### Method 1: Logistic regression with elastic net regularization
 ```{r}
-# Recipe and Preprocessing
+# Recipe and Preprocessing:
 sapply(icu_cohort_reduced, class)
 logit_recipe <- recipe(thirty_day_mort ~ ., data = train) %>%
   step_impute_mean(sodium) %>%
@@ -112,26 +112,29 @@ logit_recipe <- recipe(thirty_day_mort ~ ., data = train) %>%
   prep(training = train, retain = TRUE)
 logit_recipe
 
+# Create model:
 logit_mod <- logistic_reg(penalty = tune(), mixture = tune()) %>% 
   set_engine("glmnet", standardize = FALSE)
 logit_mod
 
-# Bundle the recipe and model
+# Bundle the recipe and model:
 logit_wf <- workflow() %>%
   add_recipe(logit_recipe) %>%
   add_model(logit_mod)
 logit_wf
 
+# Tuning grid:
 param_grid <- grid_regular(
   penalty(range = c(-6, 3)), 
   mixture(),
   levels = c(100, 5))
 
-# Cross validation
+# Cross validation:
 set.seed(203)
 folds <- vfold_cv(train, v = 5)
 folds
 
+# Fit cross validation:
 system.time({
 logit_fit <- logit_wf %>%
   tune_grid(
@@ -142,7 +145,7 @@ logit_fit <- logit_wf %>%
 })
 logit_fit
 
-#Visualize CV results:
+# Visualize CV results:
 logit_fit %>%
   collect_metrics() %>%
   print(width = Inf) %>%
@@ -164,13 +167,103 @@ best_logit
 final_wf <- logit_wf %>% finalize_workflow(best_logit)
 final_wf
 
-# Fit the whole training set and predict the test cases
+# Fit the whole training set and predict the test cases:
 final_fit <- final_wf %>% last_fit(data_split)
 final_fit
 
-# Test metrics
+# Test metrics:
 final_fit %>% collect_metrics()
 ```
+
+#### Method 2: Random forest
+
+```{r}
+# Recipe and preprocessing:
+rf_recipe <- recipe(thirty_day_mort ~ ., data = train) %>%
+  step_impute_mean(sodium) %>%
+  step_impute_mean(chloride) %>%
+  step_impute_mean(potassium) %>%
+  step_impute_mean(bicarbonate) %>%
+  step_impute_mean(hematocrit) %>%
+  step_impute_mean(creatinine) %>%
+  step_impute_mean(wbc_count) %>%
+  step_impute_mean(glucose) %>%
+  step_impute_mean(bp_systolic) %>%
+  step_impute_mean(bp_mean) %>%
+  step_impute_mean(resp_rate) %>%
+  step_impute_mean(heart_rate) %>%
+  step_impute_mean(temp) %>%
+  step_impute_mode(marital_status) %>%
+  step_zv(all_numeric_predictors()) %>% 
+  prep(training = train, retain = TRUE)
+rf_recipe
+
+# Create model:
+rf_mod <- rand_forest(
+  mode = "classification",
+  mtry = tune(),
+  trees = tune()) %>% 
+  set_engine("ranger")
+rf_mod
+
+# Create workflow:
+rf_wf <- workflow() %>%
+  add_recipe(rf_recipe) %>%
+  add_model(rf_mod)
+rf_wf
+
+# Tuning grid:
+param_grid <- grid_regular(
+  trees(range = c(100L, 300L)), 
+  mtry(range = c(1L, 5L)),
+  levels = c(3, 5)
+  )
+param_grid
+
+# Cross validation:
+folds # created in method 1
+
+# Fit cross validation:
+rf_fit <- rf_wf %>%
+  tune_grid(
+    resamples = folds,
+    grid = param_grid,
+    metrics = metric_set(roc_auc, accuracy)
+    )
+rf_fit
+
+# Visualize CV results:
+rf_fit %>%
+  collect_metrics() %>%
+  print(width = Inf) %>%
+  filter(.metric == "roc_auc") %>%
+  ggplot(mapping = aes(x = trees, y = mean, color = mtry)) +
+  geom_point() + 
+  labs(x = "Num. of Trees", y = "CV AUC")
+
+# Show the top 5 models:
+rf_fit %>% show_best("roc_auc")
+
+# Select the best model:
+best_rf <- rf_fit %>%
+  select_best("roc_auc")
+best_rf
+
+# Finalize the model:
+# Final workflow:
+final_wf_rf <- rf_wf %>%
+  finalize_workflow(best_rf)
+final_wf_rf
+
+# Fit the whole training set and predict the test cases
+final_fit_rf <- final_wf_rf %>%
+  last_fit(data_split)
+final_fit_rf
+
+# Test metrics
+final_fit_rf %>% collect_metrics()
+```
+
 
 ### Compare model classification performance on the test set. Report both the area under ROC curve and accuracy for each model.
 
