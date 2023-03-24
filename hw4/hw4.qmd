@@ -68,7 +68,71 @@ icu_cohort_reduced %>% tbl_summary(by = thirty_day_mort)
 
 1. Partition data into 50% training set and 50% test set. Stratify partitioning according the 30-day mortality status.
 
+```{r}
+set.seed(203)
+
+data_split <- initial_split(
+  icu_cohort_reduced, 
+  strata = "thirty_day_mort", 
+  prop = 0.5)
+data_split
+
+train <- training(data_split)
+dim(train)
+test <- testing(data_split)
+dim(test)
+```
+
 2. Train and tune the models using the training set.
+
+```{r}
+# Method 1: Logistic regression with elastic net regularization
+# Recipe and Preprocessing
+# (I did not impute the values because the missing values are minimal when 
+# compared to the large sample size. Plus, the correct way to use the 
+# imputation strategy is to run the models separately in multiple imputated 
+# datasets and then combine the results such as through averaging and 
+# obtaining the appropriate standard error. Considering the available time for 
+# the purpose of hw4, if I were to impute I might just end up doing one 
+# imputated dataset, which is not an appropriate approach in real life.)
+sapply(icu_cohort_reduced, class)
+logit_recipe <- recipe(thirty_day_mort ~ ., data = train) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_zv(all_numeric_predictors()) %>% 
+  step_normalize(all_numeric_predictors()) %>%
+  prep(training = train, retain = TRUE)
+logit_recipe
+
+logit_mod <- logistic_reg(penalty = tune(), mixture = tune()) %>% 
+  set_engine("glmnet", standardize = FALSE)
+logit_mod
+
+# Bundle the recipe and model
+logit_wf <- workflow() %>%
+  add_recipe(logit_recipe) %>%
+  add_model(logit_mod)
+logit_wf
+
+param_grid <- grid_regular(
+  penalty(range = c(-6, 3)), 
+  mixture(),
+  levels = c(100, 5))
+
+# Cross validation
+set.seed(203)
+folds <- vfold_cv(train, v = 5)
+folds
+
+system.time({
+logit_fit <- logit_wf %>%
+  tune_grid(
+    resamples = folds,
+    grid = param_grid,
+    metrics = metric_set(roc_auc, accuracy)
+    )
+})
+logit_fit
+```
 
 3. Compare model classification performance on the test set. Report both the area under ROC curve and accuracy for each model.
 
