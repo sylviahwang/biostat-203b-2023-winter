@@ -226,12 +226,14 @@ param_grid_rf
 folds # created in method 1
 
 # Fit cross validation:
+system.time({
 rf_fit <- rf_wf %>%
   tune_grid(
     resamples = folds,
     grid = param_grid_rf,
     metrics = metric_set(roc_auc, accuracy)
     )
+})
 rf_fit
 
 # Visualize CV results:
@@ -356,7 +358,7 @@ final_fit_gb
 final_fit_gb %>% collect_metrics()
 ```
 
-#### Method 4: Support vector machines (SVM) with radial basis function (RBF) Kernel
+#### Method 4: Support vector machines (SVM) with radial basis function (RBF) Kernel (I did not finish the step fitting the workflow to the CV due to extremely long running time)
 
 ```{r}
 # Recipe and preprocessing:
@@ -384,8 +386,7 @@ svm_recipe
 svm_mod <- svm_rbf(
     mode = "classification",
     cost = tune(),
-    rbf_sigma = tune()
-  ) %>% 
+    rbf_sigma = tune()) %>% 
   set_engine("kernlab")
 svm_mod
 
@@ -399,52 +400,55 @@ svm_wf
 param_grid_svm <- grid_regular(
   cost(range = c(-8, 5)),
   rbf_sigma(range = c(-5, -3)),
-  levels = c(14, 5)
-  )
+  levels = c(14, 5))
 param_grid_svm
 
 # Cross validation:
 folds # created in method 1
 
-# Fit cross validation:
-svm_fit <- svm_wf %>%
-  tune_grid(
-    resamples = folds,
-    grid = param_grid_svm,
-    metrics = metric_set(roc_auc, accuracy))
-svm_fit
+# I was not able to finish running the code below as it did not finish in hours.
 
-# Visualize CV results:
-svm_fit %>%
-  collect_metrics() %>%
-  print(width = Inf) %>%
-  filter(.metric == "roc_auc") %>%
-  ggplot(mapping = aes(x = cost, y = mean, alpha = rbf_sigma)) +
-  geom_point() +
-  labs(x = "Cost", y = "CV AUC") +
-  scale_x_log10()
-
-# Show the top 5 models:
-svm_fit %>% show_best("roc_auc")
-
-# Select the best model:
-best_svm <- svm_fit %>%
-  select_best("roc_auc")
-best_svm
-
-# Finalize the model:
-# Final workflow:
-final_wf_svm <- svm_wf %>%
-  finalize_workflow(best_svm)
-final_wf_svm
-
-# Fit the whole training set and predict the test cases
-final_fit_svm <- final_wf_svm %>%
-  last_fit(data_split)
-final_fit_svm
-
-# Test metrics
-final_fit_svm %>% collect_metrics()
+# # Fit cross validation:
+# system.time({
+# svm_fit <- svm_wf %>%
+#   tune_grid(
+#     resamples = folds,
+#     grid = param_grid_svm,
+#     metrics = metric_set(roc_auc, accuracy))
+# })
+# svm_fit
+# 
+# # Visualize CV results:
+# svm_fit %>%
+#   collect_metrics() %>%
+#   print(width = Inf) %>%
+#   filter(.metric == "roc_auc") %>%
+#   ggplot(mapping = aes(x = cost, y = mean, alpha = rbf_sigma)) +
+#   geom_point() +
+#   labs(x = "Cost", y = "CV AUC") +
+#   scale_x_log10()
+# 
+# # Show the top 5 models:
+# svm_fit %>% show_best("roc_auc")
+# 
+# # Select the best model:
+# best_svm <- svm_fit %>%
+#   select_best("roc_auc")
+# best_svm
+# 
+# # Finalize the model:
+# # Final workflow:
+# final_wf_svm <- svm_wf %>%
+#   finalize_workflow(best_svm)
+# final_wf_svm
+# 
+# # Fit the whole training set and predict the test cases
+# final_fit_svm <- final_wf_svm %>%
+#   last_fit(data_split)
+# final_fit_svm
+# 
+# # Test metrics
+# final_fit_svm %>% collect_metrics()
 ```
 
 #### Method 5: Multilayer perceptron (MLP)
@@ -497,11 +501,13 @@ param_grid_mlp
 folds # created in method 1
 
 # Fit cross validation:
+system.time({
 mlp_fit <- mlp_wf %>%
   tune_grid(
     resamples = folds,
     grid = param_grid_mlp,
     metrics = metric_set(roc_auc, accuracy))
+})
 mlp_fit
 
 # Visualize CV results:
@@ -546,16 +552,18 @@ final_fit %>% collect_metrics()
 final_fit_rf %>% collect_metrics()
 # XGBoost:
 final_fit_gb %>% collect_metrics()
-# SVM with RBF Kernel:
-final_fit_svm %>% collect_metrics()
 # MLP:
 final_fit_mlp %>% collect_metrics()
 ```
 
-The accuracy and area under the ROC curve of the logistic regression with elastic net regulation model are and , respectively.
-The accuracy and area under the ROC curve of the random forest model are and , respectively.
-The accuracy and area under the ROC curve of the XGBoost model are and , respectively.
-The accuracy and area under the ROC curve of the SVM with RBF kernel model are and , respectively.
-The accuracy and area under the ROC curve of the MLP model are and , respectively.
+The accuracy and area under the ROC curve of the logistic regression with elastic net regulation model are 0.9076576 and 0.8068327, respectively.
 
-To sum up, xxx shows the best model classification performance on the test set.
+The accuracy and area under the ROC curve of the random forest model are 0.9239511 and 0.8808497, respectively.
+
+The accuracy and area under the ROC curve of the XGBoost model are 0.9315522 and 0.8909976, respectively.
+
+I was not able to finish running the SVM with RBF Kernel model as it was taking hours.
+
+The accuracy and area under the ROC curve of the MLP model are 0.8963688 and 0.7702331, respectively.
+
+Overall, among the models that were run, the XGBoost model showed the best model classification performance on the test set, as indicated by both its accuracy and its area under the ROC curve.
